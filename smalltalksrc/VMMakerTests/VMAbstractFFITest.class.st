@@ -32,7 +32,7 @@ VMAbstractFFITest >> createExternalFunctionFor: aBlock withArgumentTypes: argume
 	^ tfExternalFunction
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 VMAbstractFFITest >> createReturnFloatExternalFunctionFor: aBlock [
 
 	^ self
@@ -76,7 +76,7 @@ VMAbstractFFITest >> newExternalAddress: anInteger [
 	^ anExternalAddress
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 VMAbstractFFITest >> readyProcesses [
 	
 	| collection |
