@@ -1303,6 +1303,11 @@ CogObjectRepresentation >> genPrimitiveSameThreadCalloutUint64Uint64 [
 			        fetchPointer: 1
 			        ofObject: (self stackValue: PARAM_EXTERNALFUNCTION))"
 	self genLoadSlot: 1 sourceReg: Arg0Reg  destReg: Extra0Reg.
+
+	"The C function we are about to call expects its (unique) argument in Arg0Reg.
+	We have it in Arg1Reg, but we need to untag it. The C function expects an uint64_t, not a Pharo object (a SmallInteger for example)"
+	cogit MoveR: Arg1Reg R: Arg0Reg.
+	self genConvertSmallIntegerToIntegerInReg: Arg0Reg.
 	
 	"=========== EN VSCODE==========="
 	
@@ -1319,7 +1324,7 @@ CogObjectRepresentation >> genPrimitiveSameThreadCalloutUint64Uint64 [
 	"retVal := self
 		          perform: externalFunction
 		          with: (self positive64BitValueOf: argumentIntOop)."
-	"Arg0Reg already has the argument set"
+
 	cogit CallR: TempReg.
 	
 	"		cogit genPrimReturn.																							>>>>>>>>>>>>>>>>> ?????????"
@@ -1330,6 +1335,7 @@ CogObjectRepresentation >> genPrimitiveSameThreadCalloutUint64Uint64 [
 	"jumpOutOfBottomBounds jmpTarget: primitiveFailure."
 	"jumpOutOfTopBounds jmpTarget: primitiveFailure."
 	
+	"Esta prim deberia lidiar solo con SmallInteger, si se le pasa un LongInteger deberia fallbackear a la primitiva del interprete, asique esta no seria una 'Complete Primitive', sino "
 	^CompletePrimitive.
 	
 	
