@@ -22,6 +22,13 @@ LibFFI class >> ancilliaryClasses [
 	^ { LibFFICIF. LibFFIType. LibFFIWorkerTask }
 ]
 
+{ #category : 'lookup' }
+LibFFI >> addressForBlock: aFullBlockClosure [ 
+	
+	<doNotGenerate>
+	^ functions keyAtValue: aFullBlockClosure 
+]
+
 { #category : 'type constants' }
 LibFFI >> char [
 	<doNotGenerate>
@@ -155,6 +162,12 @@ LibFFI >> sint8 [
 	<doNotGenerate>
 
 	^ LibFFIType type: FFI_TYPE_SINT8 size: 1 on: self
+]
+
+{ #category : 'accessing' }
+LibFFI >> startingAddress: anAddress [
+
+ nextAddress := anAddress 
 ]
 
 { #category : 'type constants' }
