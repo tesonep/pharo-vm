@@ -188,7 +188,19 @@ UnicornProcessor >> r11: anInteger [
 	machineSimulator r11: anInteger
 ]
 
-{ #category : 'registers' }
+{ #category : #registers }
+UnicornProcessor >> r12: anInteger [ 
+	
+	machineSimulator r12: anInteger
+]
+
+{ #category : #registers }
+UnicornProcessor >> r13: anInteger [ 
+	
+	machineSimulator r13: anInteger
+]
+
+{ #category : #registers }
 UnicornProcessor >> r1: anInteger [ 
 	
 	^ machineSimulator r1: anInteger 
