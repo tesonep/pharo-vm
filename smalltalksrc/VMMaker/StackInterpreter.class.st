@@ -449,6 +449,7 @@ Class {
 		'StackPageUnreached'
 	],
 	#pools : [
+		'LibFFIConstants',
 		'VMBasicConstants',
 		'VMBytecodeConstants',
 		'VMClassIndices',
@@ -730,7 +731,8 @@ StackInterpreter class >> initializeBytecodeTableForSistaV1 [
 		(227		extPushLiteralVariableBytecode)
 		(228		extPushLiteralBytecode)
 		(229		longPushTemporaryVariableBytecode)
-		(230		unknownBytecode)
+
+		(230		bytecodeFFICall)
 		(231		pushNewArrayBytecode)
 		(232		extPushIntegerBytecode)
 		(233		extPushCharacterBytecode)
@@ -2077,6 +2079,17 @@ StackInterpreter >> allocateMemoryForImageHeader: header [
 
 ]
 
+{ #category : 'initialization' }
+StackInterpreter >> allocateParameters: anInteger using: allocationBlock [
+	<inline: #always>
+
+	anInteger = 0 ifTrue: [ ^ nil ].
+
+	^ self
+		cCode: [ allocationBlock value: anInteger ]
+		inSmalltalk: [ CArrayAccessor on: (Array new: anInteger) ]
+]
+
 { #category : 'compiled methods' }
 StackInterpreter >> alternateHeaderHasPrimitiveFlag: methodHeader [
 	<inline: true>
@@ -2749,7 +2762,77 @@ StackInterpreter >> booleanValueOf: obj [
 	^ nil
 ]
 
+<<<<<<< HEAD
 { #category : 'common selector sends' }
+=======
+{ #category : #'stack bytecodes' }
+StackInterpreter >> bytecodeFFICall [
+	| n fdef args cif externalFunction argumentSize parameters returnHolder value intHolder |
+	n := self fetchByte.
+	
+	self fetchNextBytecode.
+	
+	fdef := self literal: n.
+	
+	"1. Obtain externalFunction and extract the CIF"
+	externalFunction := self getHandler: fdef.
+	self failed 
+		ifTrue: [ 
+			self error: 'Invalid External Function Argument'].
+
+	cif := self getHandlerAsCif:(objectMemory
+				fetchPointer: 1
+				ofObject: fdef).
+
+	self failed
+		ifTrue: [ 
+			self error: 'Invalid CIF in ExternalFunction' ].
+	
+	
+	" 2. Prepare Arguments:
+	- Verify Arguments is an Array
+	- Allocate space for all the arguments in the stack and a holder for the return, and the parameters' pointer C array
+	- Marshall arguments and store in the parameter array."
+
+	argumentSize := cif numberArguments.
+
+	parameters := self allocateParameters: argumentSize 
+		using: [:aSize | self alloca: (self sizeof: #'void*') * aSize ].
+
+	0 to: argumentSize - 1 do: [ :i | 
+		| argType argHolder |
+		argType := cif argTypeAt: i.
+
+		argHolder := self alloca: argType size.
+		parameters at: i put: argHolder.
+	
+		self marshallArgumentFromElement: (self stackValue: (argumentSize - 1 - i)) into: argHolder ofType: argType type withSize: argType size.
+				
+		self failed 
+				ifTrue: [ 
+					self error: 'Bad argument!']].
+	
+	returnHolder := self alloca: cif returnType size.
+	
+
+	" 3. Call and then return
+	- Call
+	- Marshall Argument and push it to the stack
+	- Return"
+
+	self
+		ffi_call: cif
+		_: externalFunction
+		_: returnHolder
+		_: parameters.
+
+	self marshallAndPushReturnValueFrom: returnHolder ofType: cif returnType poping: argumentSize.	
+	
+	
+]
+
+{ #category : #'common selector sends' }
+>>>>>>> 74d3732221 (added support to have a bytecode instruction to perform the FFI calls directly)
 StackInterpreter >> bytecodePrimAdd [
 	| rcvr arg result |
 	rcvr := self stackValue: 1.
@@ -5783,7 +5866,20 @@ StackInterpreter >> fetchFloat: fieldIndex ofObject: objectPointer [
 	^objectMemory floatValueOf: floatOop
 ]
 
+<<<<<<< HEAD
 { #category : 'utilities' }
+=======
+{ #category : #utilities }
+StackInterpreter >> fetchFloatFromOop: elemOop [
+	"Fetch the instance variable at the given index of the given object. Return the C double precision floating point value of that instance variable, or fail if it is not a Float."
+	"Note: May be called by translated primitive code."
+
+	<returnTypeC: #double>
+	^objectMemory floatValueOf: elemOop
+]
+
+{ #category : #utilities }
+>>>>>>> 74d3732221 (added support to have a bytecode instruction to perform the FFI calls directly)
 StackInterpreter >> fetchInteger: fieldIndex ofObject: objectPointer [
 	"Note: May be called by translated primitive code."
 
@@ -5849,7 +5945,18 @@ StackInterpreter >> fetchStackPointerOf: aContext [
 	^objectMemory integerValueOf: sp
 ]
 
+<<<<<<< HEAD
 { #category : 'debug support' }
+=======
+{ #category : #'ffi - helpers' }
+StackInterpreter >> ffi_call: aCif _: externalFunctionAddress _: returnHolder _: parameters [
+
+	<doNotGenerate>
+	libFFI ffiCall: aCif _: externalFunctionAddress _: returnHolder _: parameters
+]
+
+{ #category : #'debug support' }
+>>>>>>> 74d3732221 (added support to have a bytecode instruction to perform the FFI calls directly)
 StackInterpreter >> findClassContainingMethod: meth startingAt: classObj [
 	| currClass classDict classDictSize methodArray i |
 	(objectMemory isOopForwarded: classObj)
@@ -7046,7 +7153,32 @@ StackInterpreter >> getGCMode [
 	^0
 ]
 
+<<<<<<< HEAD
 { #category : 'image save/restore' }
+=======
+{ #category : #'ffi - helpers' }
+StackInterpreter >> getHandler: anOop [ 
+
+	<api>
+	<returnTypeC: #'void *'>
+
+	((objectMemory isPointers: anOop) not or: [ (objectMemory slotSizeOf: anOop) < 1 ])
+		ifTrue: [ self primitiveFail. ^ nil ].
+		
+	^ self readAddress: (objectMemory fetchPointer: 0 ofObject: anOop)
+
+]
+
+{ #category : #'ffi - helpers' }
+StackInterpreter >> getHandlerAsCif: anOop [
+
+	^ self
+		cCode: [ self cCoerce: (self getHandler: anOop) to: 'ffi_cif *' ]
+		inSmalltalk: [ libFFI cifAtAddress: (self getHandler: anOop)]
+]
+
+{ #category : #'image save/restore' }
+>>>>>>> 74d3732221 (added support to have a bytecode instruction to perform the FFI calls directly)
 StackInterpreter >> getImageHeaderFlags [
 	"Answer the flags that are contained in the 7th long of the image header."
 	^(VMBIGENDIAN ifTrue: [0] ifFalse: [2]) "this is the imageFloatsLittleEndian flag"
@@ -9877,7 +10009,120 @@ StackInterpreter >> marryFrame: theFP SP: theSP copyTemps: copyTemps [
 	^ theContext
 ]
 
+<<<<<<< HEAD
 { #category : 'primitive support' }
+=======
+{ #category : #'ffi - helpers' }
+StackInterpreter >> marshallAndPushReturnValueFrom: returnHolder ofType: ffiType poping: argumentsAndReceiverCount [
+
+	<option: #FEATURE_FFI>
+	<var: #ffiType type: #'ffi_type *'>
+
+	[ ffiType type ]
+		caseOf: {
+			[ FFI_TYPE_SINT8 ] 	-> [ self pop: argumentsAndReceiverCount thenPushInteger: (objectMemory readSINT8AtPointer: returnHolder) ].
+			[ FFI_TYPE_SINT16 ] 	-> [ self pop: argumentsAndReceiverCount thenPushInteger: (objectMemory readSINT16AtPointer: returnHolder) ].
+			[ FFI_TYPE_SINT32 ] 	-> [ self 
+													pop: argumentsAndReceiverCount 
+													thenPush: (objectMemory signed32BitIntegerFor: (objectMemory readSINT32AtPointer: returnHolder)) ].
+			[ FFI_TYPE_SINT64 ] 	-> [ self 
+													pop: argumentsAndReceiverCount 
+													thenPush: (objectMemory signed64BitIntegerFor: (objectMemory readSINT64AtPointer: returnHolder)) ].
+
+			[ FFI_TYPE_UINT8 ] 	-> [ self pop: argumentsAndReceiverCount thenPushInteger: (objectMemory readUINT8AtPointer: returnHolder) ].
+			[ FFI_TYPE_UINT16 ] 	-> [ self pop: argumentsAndReceiverCount thenPushInteger: (objectMemory readUINT16AtPointer: returnHolder) ].
+			[ FFI_TYPE_UINT32 ] 	-> [ self 
+													pop: argumentsAndReceiverCount 
+													thenPush: (objectMemory positive32BitIntegerFor: (objectMemory readUINT32AtPointer: returnHolder)) ].
+			[ FFI_TYPE_UINT64 ] 	-> [ self 
+													pop: argumentsAndReceiverCount 
+													thenPush: (objectMemory positive64BitIntegerFor: (objectMemory readUINT64AtPointer: returnHolder)) ].
+
+			[ FFI_TYPE_POINTER ] 	-> [ self pop: argumentsAndReceiverCount thenPush: (objectMemory newExternalAddressWithValue: (objectMemory readPointerAtPointer: returnHolder)) ].
+
+			[ FFI_TYPE_STRUCT ] 	-> [ self pop: argumentsAndReceiverCount thenPush: (self newByteArrayWithStructContent: returnHolder size: ffiType size) ].
+
+			[ FFI_TYPE_FLOAT ] 	-> [ self pop: argumentsAndReceiverCount thenPushFloat: (objectMemory readFloat32AtPointer: returnHolder) ].
+			[ FFI_TYPE_DOUBLE ] 	-> [ self pop: argumentsAndReceiverCount thenPushFloat: (objectMemory readFloat64AtPointer: returnHolder) ].
+			[ FFI_TYPE_VOID ] 		-> [ self pop: argumentsAndReceiverCount - 1 "Pop the arguments leaving the receiver" ]}
+			otherwise: [ self primitiveFailFor: PrimErrBadArgument ]
+
+]
+
+{ #category : #'ffi - helpers' }
+StackInterpreter >> marshallArgumentFrom: argumentsArrayOop atIndex: i into: argHolder ofType: argType withSize: argTypeSize [
+
+	<option: #FEATURE_FFI>
+	
+	| elemOop |
+	elemOop := argumentsArrayOop at: i.
+	"(argType = 11) ifTrue: [ self marshallUInt64From: argumentsArrayOop at: i into: argHolder  ] ifFalse: [ 1halt ]."
+	[ argType ]
+		caseOf:
+			{([ FFI_TYPE_POINTER ]
+				-> [ self marshallPointerFrom: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_STRUCT ]
+				-> [ self marshallStructFrom: argumentsArrayOop at: i into: argHolder withSize: argTypeSize ]).
+			([ FFI_TYPE_FLOAT ]
+				-> [ self marshallFloatFrom: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_DOUBLE ]
+				-> [ self marshallDoubleFrom: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_SINT8 ]
+				-> [ self marshallSInt8From: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_UINT8 ]
+				-> [ self marshallUInt8From: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_SINT16 ]
+				-> [ self marshallSInt16From: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_UINT16 ]
+				-> [ self marshallUInt16From: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_SINT32 ]
+				-> [ self marshallSInt32From: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_UINT32 ]
+				-> [ self marshallUInt32From: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_SINT64 ]
+				-> [ self marshallSInt64From: argumentsArrayOop at: i into: argHolder ]).
+			([ FFI_TYPE_UINT64 ]
+				-> [ "self marshallUInt64From: argumentsArrayOop at: i into: argHolder"
+					self marshallUInt64From: elemOop into: argHolder ])}
+		otherwise: [ self primitiveFailFor: PrimErrBadArgument ]
+]
+
+{ #category : #'ffi - helpers' }
+StackInterpreter >> marshallArgumentFromElement: elemOop into: argHolder ofType: argType withSize: argTypeSize [
+
+	<option: #FEATURE_FFI>
+	
+	[ argType ]
+		caseOf:
+			{([ FFI_TYPE_POINTER ]
+				-> [ self marshallPointerFromElement: elemOop into: argHolder ]).
+			([ FFI_TYPE_STRUCT ]
+				-> [ self marshallStructFromElement: elemOop into: argHolder withSize: argTypeSize ]).
+			([ FFI_TYPE_FLOAT ]
+				-> [ self marshallFloatFrom: (objectMemory floatValueOf: elemOop) into: argHolder ]).
+			([ FFI_TYPE_DOUBLE ]
+				-> [ self marshallDoubleFrom: (objectMemory floatValueOf: elemOop) into: argHolder ]).
+			([ FFI_TYPE_SINT8 ]
+				-> [ self marshallSInt8From: elemOop into: argHolder ]).
+			([ FFI_TYPE_UINT8 ]
+				-> [ self marshallUInt8From: elemOop into: argHolder ]).
+			([ FFI_TYPE_SINT16 ]
+				-> [ self marshallSInt16From: elemOop into: argHolder ]).
+			([ FFI_TYPE_UINT16 ]
+				-> [ self marshallUInt16From: elemOop into: argHolder ]).
+			([ FFI_TYPE_SINT32 ]
+				-> [ self marshallSInt32From: elemOop into: argHolder ]).
+			([ FFI_TYPE_UINT32 ]
+				-> [ self marshallUInt32From: elemOop into: argHolder ]).
+			([ FFI_TYPE_SINT64 ]
+				-> [ self marshallSInt64From: elemOop into: argHolder ]).
+			([ FFI_TYPE_UINT64 ]
+				-> [ self marshallUInt64From: elemOop into: argHolder ])}
+		otherwise: [ self primitiveFailFor: PrimErrBadArgument ]
+]
+
+{ #category : #'primitive support' }
+>>>>>>> 74d3732221 (added support to have a bytecode instruction to perform the FFI calls directly)
 StackInterpreter >> maybeFailForLastObjectOverwrite [
 	<inline: true>
 	checkAllocFiller ifTrue: 
