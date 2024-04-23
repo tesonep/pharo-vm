@@ -893,6 +893,8 @@ SpurMemoryManager class >> initializeSpecialObjectIndices [
 	ClassLargeNegativeInteger := 42.
 
 	ClassExternalAddress := 43.
+	
+	SelectorInvokeFunctionWithArguments := 45.
 
 	SelectorAboutToReturn := 48.
 	SelectorRunWithIn := 49.

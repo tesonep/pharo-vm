@@ -10,7 +10,17 @@ Class {
 	#tag : 'InterpreterTests'
 }
 
-{ #category : 'tests' }
+{ #category : #helpers }
+VMInterpreterTests >> installClassIntoClassTableWithInstSpec: aFormatInt instSize: aSizeInt [ 
+	| class |
+	class := self
+		newClassInOldSpaceWithSlots: aSizeInt
+		instSpec: aFormatInt.
+	memory ensureBehaviorHash: class.	
+	^class	
+]
+
+{ #category : #tests }
 VMInterpreterTests >> installSelector: aSelectorOop method: aMethodOop inMethodDictionary: aMethodDictionary [
 	
 	| anArrayOfMethods |
