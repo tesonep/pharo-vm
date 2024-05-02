@@ -3198,7 +3198,8 @@ SimpleStackBasedCogit >> putSelfInReceiverResultReg [
 SimpleStackBasedCogit >> readAddress: anOop [ 
 
 	<api>
-	"AVERRrRRRR"
+"AVERRrRRRR"
+	<returnTypeC: #'void *'>
 
 	(objectMemory is: anOop KindOfClass: objectMemory classExternalAddress)
 		ifFalse: [ ^ nil ].
