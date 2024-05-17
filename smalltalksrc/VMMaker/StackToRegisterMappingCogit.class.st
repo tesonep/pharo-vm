@@ -1139,7 +1139,7 @@ StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithThreeArgsWit
 				
 		otherwise: [ ^ nil ].
 	
-		[ aCif argTypeAt: 1 ]
+		[ (aCif argTypeAt: 1) type  ]
 		caseOf:
 			{([ FFI_TYPE_POINTER ]
 				-> [  ]).
@@ -1168,7 +1168,7 @@ StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithThreeArgsWit
 				
 		otherwise: [ ^ nil ].
 		
-		[ aCif argTypeAt: 2 ]
+		[ (aCif argTypeAt: 2) type  ]
 		caseOf:
 			{([ FFI_TYPE_POINTER ]
 				-> [  ]).
@@ -1242,7 +1242,7 @@ StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithTwoArgsWithC
 				
 		otherwise: [ ^ nil ].
 	
-		[ aCif argTypeAt: 1 ]
+		[ (aCif argTypeAt: 1) type ]
 		caseOf:
 			{([ FFI_TYPE_POINTER ]
 				-> [  ]).
