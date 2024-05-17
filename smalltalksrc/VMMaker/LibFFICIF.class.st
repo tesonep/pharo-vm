@@ -103,7 +103,7 @@ LibFFICIF >> nargs [
 
 { #category : 'accessing' }
 LibFFICIF >> numberArguments [
-	<inline: #always> "averrrrrrrr"
+	<inline: #always> 
 	^ self nargs
 ]
 
