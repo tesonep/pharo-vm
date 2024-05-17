@@ -1003,7 +1003,7 @@ StackToRegisterMappingCogit >> checkArgumentUint64: aRegister [
 
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithCif: aCif usingRegisters: usedRegisters [	
-	
+	<doNotGenerate>
 	[ aCif numberArguments ]
 		caseOf:
 			{([ 1 ]
@@ -1782,7 +1782,11 @@ StackToRegisterMappingCogit >> genBytecodeFFICall [
 	self CallFullRT: externalFunctionAddr.
 	"If we open CogX64Compiler >> initializeAbstractRegistersSysV we can see that the RAX register is mapped to TempReg.
 	We need to convert that C integer into a Pharo SmallInteger:"																													
-	self handleReturnFromExternalFunctionWithCif: cif.
+	"self handleReturnFromExternalFunctionWithCif: cif."	
+	objectRepresentation genConvertIntegerToSmallIntegerInReg:  TempReg.
+	self ssPushRegister: TempReg.
+	"----"
+		
 	jumpContinue := self Jump: 0.
 	
 	"failure := self Label. jumpError at: 2 esta el size. at: 1 esta el puntero en si.
@@ -3696,7 +3700,7 @@ StackToRegisterMappingCogit >> generateTracingTrampolines [
 
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> handleReturnFromExternalFunctionWithCif: aCif [
-	
+	<doNotGenerate>
 	"If we open CogX64Compiler >> initializeAbstractRegistersSysV we can see that the RAX register is mapped to TempReg.
 	We need to convert that C integer into a Pharo SmallInteger:"																													
 	"objectRepresentation genConvertIntegerToSmallIntegerInReg:  TempReg.
@@ -4250,7 +4254,7 @@ StackToRegisterMappingCogit >> populate: tuple withPICInfoFor: cPIC firstCacheTa
 
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> preserveAndAllocateRegisterForExternalFunctionCallWithCif: aCif [
-
+	<doNotGenerate>
 	
 	| top regsUsed |
 	
