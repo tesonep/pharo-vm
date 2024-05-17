@@ -1769,7 +1769,7 @@ StackToRegisterMappingCogit >> genBytecodeFFICall [
 	(cif argTypeAt: 0) type = FFI_TYPE_UINT64 ifFalse:  [ ^ self unknownBytecode ].
 	
 	"Preserve Arg0Reg because it corresponds to the first C argument" 
-	argsBeingUsed := self preserveAndAllocateRegisterForExternalFunctionCallWithCif: cif.
+	argsBeingUsed := self preserveAndAllocateRegisterForExternalFunctionCallWithCif: cif.  "implicitly return. 1->Arg0Reg . 2->Arg0Reg and Arg1Reg . ..."
 	"top := self ssTop.
 	self ssPop: 1.
 	self ssAllocateCallReg: Arg0Reg.
@@ -4265,7 +4265,7 @@ StackToRegisterMappingCogit >> preserveAndAllocateRegisterForExternalFunctionCal
 		self ssAllocateCallReg: Arg0Reg.
 		top moveToReg: Arg0Reg.
 		
-		 ^ {Arg0Reg}
+		 ^ 1
 	].
 
 	(aCif numberArguments = 2) ifTrue: [  
@@ -4280,7 +4280,7 @@ StackToRegisterMappingCogit >> preserveAndAllocateRegisterForExternalFunctionCal
 		self ssAllocateCallReg: Arg1Reg.
 		top moveToReg: Arg1Reg.
 		
-		 ^ {Arg0Reg . Arg1Reg}
+		 ^ 2
 	].
 	
 	
