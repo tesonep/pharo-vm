@@ -946,7 +946,7 @@ StackToRegisterMappingCogit >> checkArgumentSint16: aRegister [
 		- value > INT16_MAX 
 		- value < INT16_MIN 
 	"
-	
+	<doNotGenerate>
 	| jumpBadArg jumpBelowRep jumpAboveRep |
 	jumpBadArg := objectRepresentation genJumpNotSmallInteger: aRegister.
 	
@@ -967,7 +967,7 @@ StackToRegisterMappingCogit >> checkArgumentUint16: aRegister [
 		- value < 0 
 		- value > UINT16_MAX
 	"
-	
+	<doNotGenerate>
 	| jumpBadArg jumpNeg jumpAboveRep |
 	jumpBadArg := objectRepresentation genJumpNotSmallInteger: aRegister.
 	
@@ -984,7 +984,7 @@ StackToRegisterMappingCogit >> checkArgumentUint16: aRegister [
 { #category : #'compile abstract instructions' }
 StackToRegisterMappingCogit >> checkArgumentUint64: aRegister [ 
 	""
-	
+	<doNotGenerate>
 	| jumpBadArg jumpNeg jumps |
 	
 	jumps := self alloca: 2 type: (self cCode: [#'AbstractInstruction *'] inSmalltalk: [self backEnd class]).
@@ -1026,7 +1026,7 @@ StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithCif: aCif us
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithOneArgWithCif: aCif usingRegisters: usedRegisters [
 	
-	
+	<doNotGenerate>
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
 	This would be the only check we do at run-time. So we generate (cogit) code to do it:"
 	
@@ -1075,7 +1075,7 @@ StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithOneArgWithCi
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithThreeArgsWithCif: aCif usingRegisters: usedRegisters [
 	
-	
+	<doNotGenerate>
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
 	This would be the only check we do at run-time. So we generate (cogit) code to do it:"
 	
@@ -1179,7 +1179,7 @@ StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithThreeArgsWit
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithTwoArgsWithCif: aCif usingRegisters: usedRegisters [
 	
-	
+	<doNotGenerate>
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
 	This would be the only check we do at run-time. So we generate (cogit) code to do it:"
 	
