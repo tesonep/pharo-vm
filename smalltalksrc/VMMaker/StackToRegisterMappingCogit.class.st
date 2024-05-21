@@ -941,6 +941,7 @@ StackToRegisterMappingCogit >> ceStoreCheckTrampoline [
 
 { #category : #'compile abstract instructions' }
 StackToRegisterMappingCogit >> checkArgumentSint16: aRegister [ 
+	<doNotGenerate>
 	"
 	value:= value inside aRegister. We want to check that:
 		- value > INT16_MAX 
@@ -975,6 +976,7 @@ StackToRegisterMappingCogit >> checkArgumentSint16: aRegister [
 
 { #category : #'compile abstract instructions' }
 StackToRegisterMappingCogit >> checkArgumentUint16: aRegister [ 
+	<doNotGenerate>
 	"
 	value:= value inside aRegister. We want to check that:
 		- value < 0 
@@ -1009,7 +1011,7 @@ StackToRegisterMappingCogit >> checkArgumentUint16: aRegister [
 
 { #category : #'compile abstract instructions' }
 StackToRegisterMappingCogit >> checkArgumentUint64: aRegister [ 
-	""
+	<doNotGenerate>
 	| jumpBadArg jumpNeg mergePointToExit fallthroughJump fallbackJump fallthroughLabel |
 	
 	jumpBadArg := objectRepresentation genJumpNotSmallInteger: aRegister.
@@ -1057,6 +1059,7 @@ StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithCif: aCif [
 
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> checkArgumentsForExternalFunctionWithOneArgWithCif: aCif [
+	<doNotGenerate>
 	<var: #aCif type: #'ffi_cif *'>
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
 	This would be the only check we do at run-time. So we generate (cogit) code to do it:"
@@ -3561,6 +3564,7 @@ StackToRegisterMappingCogit >> getCifFromTFExternalFunction: aTFExternalFunction
 
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> handleReturnFromExternalFunctionWithCif: aCif [
+	<doNotGenerate>
 	<var: #aCif type: #'ffi_cif *'>
 	"If we open CogX64Compiler >> initializeAbstractRegistersSysV we can see that the RAX register is mapped to TempReg.
 	We need to convert that C integer into a Pharo SmallInteger:"																													
