@@ -1952,6 +1952,8 @@ StackToRegisterMappingCogit >> genBytecodeFFICall [
 	continueToNextBytecode := self Label.
 	jumpContinue jmpTarget: continueToNextBytecode.
 	
+	self Stop. " 																		<<<<<<<<<<<<<<<<<<<<<<SACARRRRRRRRRRRRRRRR"
+	
 	^0
 ]
 
