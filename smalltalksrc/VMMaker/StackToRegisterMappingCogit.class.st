@@ -1083,11 +1083,13 @@ StackToRegisterMappingCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSi
 			- value < 0 
 			- value > MAX value possible for numberOfBits
 	"
-	| jumpBadArg jumpBelowRep jumpAboveRep mergePointToExit fallthroughJump fallbackJump fallthroughLabel |
+	| jumpBadArg jumpBelowRep jumpAboveRep mergePointToExit fallthroughJump fallbackJump fallthroughLabel notJumpAbove |
 	
 	jumpBadArg := objectRepresentation genJumpNotSmallInteger: aRegister.
 	
 	objectRepresentation genConvertSmallIntegerToIntegerInReg: aRegister.
+	
+	notJumpAbove := false.
 	
 	[ signedOrNot ] 
 		caseOf: { 
@@ -1125,7 +1127,8 @@ StackToRegisterMappingCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSi
 										jumpBelowRep := self JumpLess: 0.
 								
 										"self CmpCq: UINT64_MAX R: aRegister.
-										jumpAboveRep := self JumpGreater: 0.					TIENE SENTIDO PREGUNTARSE ESTO???"
+										jumpAboveRep := self JumpGreater: 0.					>>>>>>>>>>>>>>>>>>>>>> TIENE SENTIDO CHEQUEAR ESTO???"
+										notJumpAbove := true.
 								 ].
 							 } otherwise: [ ^ nil ]
 			
@@ -1173,7 +1176,10 @@ StackToRegisterMappingCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSi
 	mergePointToExit := self Label.				
 	jumpBadArg jmpTarget: mergePointToExit.
 	jumpBelowRep jmpTarget: mergePointToExit.
-	jumpAboveRep jmpTarget: mergePointToExit.
+	
+	notJumpAbove ifFalse: [  
+	jumpAboveRep jmpTarget: mergePointToExit. ].
+
 	fallbackJump := self Jump: 0.
 	
 	fallthroughLabel := self Label.
