@@ -439,7 +439,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentsForExternalFunctionWithOneArgWit
 	An integer or pointer argument we know it's going to be in Arg0Reg [Regardless the ABI]"
 	
 
-	^ self checkAndUnpackArgumentOfType: (aCif argTypeAt: 0 type) forExternalFunctionUsing: Arg0Reg
+	^ self checkAndUnpackArgumentOfType: ((aCif argTypeAt: 0) type) forExternalFunctionUsing: Arg0Reg
 
 
 
