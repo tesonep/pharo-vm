@@ -1069,7 +1069,18 @@ CogAbstractInstruction >> getOperandsWithFormat: format [
 	^ strOperands 
 ]
 
-{ #category : 'testing' }
+{ #category : #'calling C function in Smalltalk stack' }
+CogAbstractInstruction >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg FromCif: aCif [
+	
+	"This method is for the backends to return a specific register given the index in the arguments listed in aCif.
+	For example if aCif has two arguments, and indexOfArg is 1 then this method should return the register corresponding to the second argument
+	taking into accoun the type of the argument. The CIF contains all the necessary information."
+	
+	<doNotGenerate>
+	self subclassResponsibility
+]
+
+{ #category : #testing }
 CogAbstractInstruction >> hasConditionRegister [
 	"Answer if the receiver supports, e.g., JumpOverflow after a regular AddRR"
 	<inline: true>
@@ -1482,7 +1493,18 @@ CogAbstractInstruction >> outputMachineCodeAt: targetAddress [
 		objectMemory byteAt: targetAddress + j put: (machineCode at: j)]
 ]
 
-{ #category : 'calling C function in Smalltalk stack' }
+{ #category : #'calling C function in Smalltalk stack' }
+CogAbstractInstruction >> prepareForExternalCallWithCif: aCif [
+	
+	"This method is for the backends to pick the corresponding registers for the arguments for an external function call.
+	They need to: pick the registers, pop the values from the stack and put them in the registers and 
+	preserve the values in the registers before writing on them."
+	
+	<doNotGenerate>
+	self subclassResponsibility
+]
+
+{ #category : #'calling C function in Smalltalk stack' }
 CogAbstractInstruction >> prepareStackToCallCFunctionInSmalltalkStack: anObject [
 	
 	"This is a hook to allow the backends to implement special handling when calling a C function in the Smalltalk stack"

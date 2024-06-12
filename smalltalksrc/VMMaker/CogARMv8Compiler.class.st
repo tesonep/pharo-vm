@@ -4274,7 +4274,13 @@ CogARMv8Compiler >> generalPurposeRegisterMap [
 			#r12. R12	}
 ]
 
-{ #category : 'testing' }
+{ #category : #'as yet unclassified' }
+CogARMv8Compiler >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg FromCif: aCif [
+
+	"TODO"
+]
+
+{ #category : #testing }
 CogARMv8Compiler >> hasConditionRegister [
 	"Answer if the receiver supports, e.g., JumpOverflow after a regular AddRR"
 	^true
