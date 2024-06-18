@@ -9600,6 +9600,7 @@ SpurMemoryManager >> newArrayWith: aCollection [
 
 { #category : 'ffi - helpers' }
 SpurMemoryManager >> newExternalAddressWithValue: aPointer [
+	<api>
 	| ptr oop |
 	<var: #ptr type:'void **'>
 
