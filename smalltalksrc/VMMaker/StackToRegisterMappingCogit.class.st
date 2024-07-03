@@ -1482,12 +1482,12 @@ StackToRegisterMappingCogit >> genBytecodeFFICall [
 		^ self fallbackToPrimitiveWithFunction: aTFExternalFunction andCif: cif usingRunner: runner.
 	].
 
-	(self isBackendSupportedForJITtedBytecodeFFI) ifFalse: [ ^ self fallbackToPrimitiveWithFunction: aTFExternalFunction andCif: cif usingRunner: runner ].
+	(backEnd supportsJITtedBytecodeFFICall) ifFalse: [ ^ self fallbackToPrimitiveWithFunction: aTFExternalFunction andCif: cif usingRunner: runner ].
 		
 	"Move the arguments for the external function from the stack where we received them to the corresponding registers depending on the ABI,
 	that is why we rely on the backEnd to choose the registers."
 	backEnd prepareForExternalCallWithCif: cif.
-	
+
 	"Verify that the argument(s) we receive for the C function comply with those specified in the cif."
 	jumpSomeError  := self checkAndUnpackArgumentsForExternalFunctionWithCif: cif.
 	
@@ -3414,11 +3414,9 @@ StackToRegisterMappingCogit >> handleReturnFromExternalFunctionWithCif: aCif [
 	<var: #aCif type: #'ffi_cif *'>
 	| returnedPointer anExternalAddressFromPointer |
 	(self isIntegerType: aCif returnType type) ifTrue: [
-		backEnd class ISA = #X64
-			ifTrue: [ "Both SysV and Win64 returns through RAX. This register is mapped to TempReg in both ABIs."
-				objectRepresentation genConvertIntegerToSmallIntegerInReg: TempReg.
-				self MoveR: TempReg R: ReceiverResultReg ]
-			ifFalse: [ "TODO: handle for ARM" ] ].
+		self MoveR: backEnd cResultRegister R: ReceiverResultReg.
+		^ objectRepresentation genConvertIntegerToSmallIntegerInReg:
+			  ReceiverResultReg ].
 
 	aCif returnType type = FFI_TYPE_VOID ifTrue: [ "Return the receiver to guarantee that we push a return value, to not mess up the stack."
 		self genPushReceiverBytecode ].
@@ -3427,17 +3425,18 @@ StackToRegisterMappingCogit >> handleReturnFromExternalFunctionWithCif: aCif [
 	1) convert it to an ExternalAddress
 	2) push it."
 	aCif returnType type = FFI_TYPE_POINTER ifTrue: [ "ESTARA BIEN ESTO???? ( esta genPrimitiveStoreInt64IntoExternalAddress tambien sino.....)"
-			
-				self ssPushRegister: TempReg.
-				returnedPointer := self ssTop.
-				self ssPop: 1.
-			
-				anExternalAddressFromPointer := objectMemory newExternalAddressWithValue: returnedPointer.
-					
-				self MoveCw: anExternalAddressFromPointer R: ReceiverResultReg
-				
-				"TODO ESTO NO FUNCIONA. NO GENERA NADA DE CODIGO!!!" ] .
-		
+		self ssPushRegister: TempReg.
+		returnedPointer := self ssTop.
+		self ssPop: 1.
+
+		anExternalAddressFromPointer := objectMemory
+			                                newExternalAddressWithValue:
+			                                returnedPointer.
+
+		self MoveCw: anExternalAddressFromPointer R: ReceiverResultReg
+
+		"TODO ESTO NO FUNCIONA. NO GENERA NADA DE CODIGO!!!" ]
+
 	"TODO: float/doubles"
 ]
 
@@ -3566,12 +3565,6 @@ StackToRegisterMappingCogit >> initializeFixupAt: targetPC [
 	| fixup |
 	fixup := self fixupAt: targetPC.
 	self initializeFixup: fixup
-]
-
-{ #category : #'bytecode generators' }
-StackToRegisterMappingCogit >> isBackendSupportedForJITtedBytecodeFFI [
-	
-	^backEnd class ISA = #aarch64 or: (backEnd class ISA = #X64)
 ]
 
 { #category : #'span functions' }
