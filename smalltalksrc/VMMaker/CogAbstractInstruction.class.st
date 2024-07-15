@@ -1040,6 +1040,8 @@ CogAbstractInstruction >> getOperandsWithFormat: format [
 	<doNotGenerate>
 
 	| orneryOperands strOperands |
+	
+	
 	strOperands := OrderedCollection new.
 	orneryOperands := operands isCObjectAccessor
 		                  ifTrue: [ operands object ]
