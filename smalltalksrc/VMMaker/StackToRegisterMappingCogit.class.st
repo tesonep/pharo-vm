@@ -1334,6 +1334,7 @@ StackToRegisterMappingCogit >> fallbackToPrimitiveWithFunction: aTFExternalFunct
 	At the point this method is called, all the arguments are already put in their corresponding registers, *not* in the stack!"
 
 	<inline: true>
+	<var: #size type: #'int'>
 	| size |
 	self voidReceiverResultRegContainsSelf.
 	self ssFlushTo: simStackPtr.
@@ -1463,7 +1464,7 @@ StackToRegisterMappingCogit >> genBlockReturn [
 
 { #category : #'bytecode generators' }
 StackToRegisterMappingCogit >> genBytecodeFFICall [
-	| n aTFExternalFunction runner externalFunctionAddr cif failure jumpContinue continueToNextBytecode jumpSomeError jumpMaybeFailAlloc |
+	| n aTFExternalFunction runner externalFunctionAddr cif failure jumpContinue continueToNextBytecode jumpMaybeFailCheckUnpack jumpMaybeFailAlloc |
 	
 	n :=  byte1.
 	aTFExternalFunction := self getLiteral: (n bitAnd: 2r1111).
@@ -1473,7 +1474,11 @@ StackToRegisterMappingCogit >> genBytecodeFFICall [
 	externalFunctionAddr ifNil: [ ^ self fallbackToPrimitiveWithFunction: nil andCif: nil usingRunner: runner ]. 
 	
 	cif := self getCifFromTFExternalFunction: aTFExternalFunction.	
-	cif ifNil: [ ^ self fallbackToPrimitiveWithFunction: aTFExternalFunction andCif: nil usingRunner: runner ].
+	cif ifNil: [ ^ self fallbackToPrimitiveWithFunction: aTFExternalFunction andCif: nil usingRunner: runner ].											"TODO: fixear esto. casos donde la func o el cif sean nil"
+	
+	"Move the arguments for the external function from the stack where we received them to the corresponding registers depending on the ABI,
+	that is why we rely on the backEnd to choose the registers."
+	backEnd prepareForExternalCallWithCif: cif.
 									
 	(self isExternalFunctionPrototypeSupported: cif) ifFalse: [
 		"Unsupported bytecode. We need to do a message send 
@@ -1484,12 +1489,9 @@ StackToRegisterMappingCogit >> genBytecodeFFICall [
 
 	(backEnd supportsJITtedBytecodeFFICall) ifFalse: [ ^ self fallbackToPrimitiveWithFunction: aTFExternalFunction andCif: cif usingRunner: runner ].
 		
-	"Move the arguments for the external function from the stack where we received them to the corresponding registers depending on the ABI,
-	that is why we rely on the backEnd to choose the registers."
-	backEnd prepareForExternalCallWithCif: cif.
 
 	"Verify that the argument(s) we receive for the C function comply with those specified in the cif."
-	jumpSomeError  := self checkAndUnpackArgumentsForExternalFunctionWithCif: cif.
+	jumpMaybeFailCheckUnpack  := self checkAndUnpackArgumentsForExternalFunctionWithCif: cif.
 	
 	"Switch to the C stack, so the external function uses this stack to execute."
 	self genSmalltalkToCStackSwitch: true.
@@ -1503,8 +1505,10 @@ StackToRegisterMappingCogit >> genBytecodeFFICall [
 	jumpContinue := self Jump: 0.
 	
 	failure := self Label.
-	jumpSomeError jmpTarget: failure.
-	((jumpMaybeFailAlloc class ~= SmallInteger) and:[ jumpMaybeFailAlloc isJump]) ifTrue: [  
+	jumpMaybeFailCheckUnpack ifNotNil: [  "If the function doesn't have any arguments then jumpMaybeFailCheckUnpack will be nil"
+		jumpMaybeFailCheckUnpack jmpTarget: failure.
+	].
+	((jumpMaybeFailAlloc ~= 0) and:[ jumpMaybeFailAlloc isJump]) ifTrue: [  
 		jumpMaybeFailAlloc jmpTarget: failure
 	].
 	
@@ -3417,22 +3421,26 @@ StackToRegisterMappingCogit >> generateTracingTrampolines [
 StackToRegisterMappingCogit >> handleReturnFromExternalFunctionWithCif: aCif [
 
 	<var: #aCif type: #'ffi_cif *'>
-	(self isIntegerType: aCif returnType type) ifTrue: [
-		self MoveR: backEnd cResultRegister R: ReceiverResultReg.
+	(self isIntegerType: aCif returnType type) ifTrue: [ 
+		"self MoveR: backEnd cResultRegister R: ReceiverResultReg.
 		^ objectRepresentation genConvertIntegerToSmallIntegerInReg:
-			  ReceiverResultReg ].
+			  ReceiverResultReg"
+		^ objectRepresentation
+			  genIntegerTo64BitSignedIntegerValue: backEnd cResultRegister
+			  into: ReceiverResultReg
+			  scratchReg: Extra0Reg
+			  scratchReg: Extra1Reg ].
 
-	aCif returnType type = FFI_TYPE_VOID ifTrue: [ "Return the receiver to guarantee that we push a return value, to not mess up the stack."
-		"self genPushReceiverBytecode				>>>>>>>>> NO HACE FALTA!!! O SI?"
-		^0 "Just to ease the implementation of genBytecodeFFICall"].
+	aCif returnType type = FFI_TYPE_VOID ifTrue: [
+		^ 0 "Just to ease the implementation of genBytecodeFFICall" ].
 
 	"If the external function returned a pointer, so we have to wrap it in an ExternalAddress"
-	aCif returnType type = FFI_TYPE_POINTER ifTrue: [ "ESTARA BIEN ESTO???? ( esta genPrimitiveStoreInt64IntoExternalAddress tambien sino.....)"
-		
-		^ objectRepresentation genAllocExternalAddressValue: (backEnd cResultRegister) into: ReceiverResultReg scratchReg: Extra0Reg scratchReg: Extra1Reg.
-   ]
-
-	"TODO: float/doubles"
+	aCif returnType type = FFI_TYPE_POINTER ifTrue: [
+		^ objectRepresentation
+			  genAllocExternalAddressValue: backEnd cResultRegister
+			  into: ReceiverResultReg
+			  scratchReg: Extra0Reg
+			  scratchReg: Extra1Reg ]
 ]
 
 { #category : #'simulation stack' }
@@ -4268,7 +4276,13 @@ StackToRegisterMappingCogit >> pushNilSize: aMethodObj numInitialNils: numInitia
 	^self perform: pushNilSizeFunction with: aMethodObj with: numInitialNils
 ]
 
-{ #category : 'simulation only' }
+{ #category : #'bytecode generators' }
+StackToRegisterMappingCogit >> pushRegister: aRegister [ 				"tara bien????????"
+
+	self ssPush: aRegister
+]
+
+{ #category : #'simulation only' }
 StackToRegisterMappingCogit >> put: aString paddedTo: compositionWidth tabWidth: tabWidth on: aStream [
 	<doNotGenerate>
 	| fittedString size width |
