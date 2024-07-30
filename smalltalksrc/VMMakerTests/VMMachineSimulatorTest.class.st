@@ -512,7 +512,7 @@ VMMachineSimulatorTest >> testNormalExecutionUntilAddressIsRespected [
 	self assert: self instructionPointer equals: lastInstruction address
 ]
 
-{ #category : #'tests - memory access exception' }
+{ #category : 'tests - memory access exception' }
 VMMachineSimulatorTest >> testPAPROBA [
 
 	| lastInstruction invalidAddressHandled returningPoint |
