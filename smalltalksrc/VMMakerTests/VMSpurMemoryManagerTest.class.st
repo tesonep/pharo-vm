@@ -821,7 +821,8 @@ VMSpurMemoryManagerTest >> setArrayClassIntoClassTable [
 	memory
 		storePointer: ClassArrayCompactIndex
 		ofObject: memory classTableFirstPage
-		withValue: aClass
+		withValue: aClass.
+	^ aClass
 ]
 
 { #category : 'running' }
