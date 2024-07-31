@@ -3113,7 +3113,7 @@ CoInterpreter >> getCheckAllocFiller [
 
 { #category : 'trampolines' }
 CoInterpreter >> getCifFromTFExternalFunction: aTFExternalFunction [
-
+	<api>
 	| aTFFunctionDefinition cifAddr cif |
 	aTFFunctionDefinition := objectMemory
 		                         fetchPointer: 1
