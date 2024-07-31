@@ -1190,7 +1190,7 @@ CoInterpreter >> ceFallbackFFICallUsingRunner: runner andExternalFunction: anExt
 	"Call invokeFunction:withArguments: on the runner using the external function and an array of boxed arguments."
 
 	cif := self getCifFromTFExternalFunction: anExternalFunction.
-	size := cif numberOfArguments.
+	size := cif numberArguments.
 	argumentArray := objectMemory
 		         eeInstantiateSmallClassIndex: ClassArrayCompactIndex
 		         format: objectMemory arrayFormat
@@ -3113,12 +3113,12 @@ CoInterpreter >> getCheckAllocFiller [
 
 { #category : 'trampolines' }
 CoInterpreter >> getCifFromTFExternalFunction: aTFExternalFunction [
+
 	<api>
-	| aTFFunctionDefinition cifAddr cif |
+	| aTFFunctionDefinition cif |
 	aTFFunctionDefinition := objectMemory
 		                         fetchPointer: 1
 		                         ofObject: aTFExternalFunction.
-	cifAddr := self getHandler: aTFFunctionDefinition.
 	cif := self getHandlerAsCif:
 		       (objectMemory fetchPointer: 1 ofObject: aTFExternalFunction).
 
