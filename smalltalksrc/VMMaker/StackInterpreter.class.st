@@ -2792,7 +2792,6 @@ StackInterpreter >> bytecodeFFICall [
 ]
 
 { #category : #'common selector sends' }
->>>>>>> 74d3732221 (added support to have a bytecode instruction to perform the FFI calls directly)
 StackInterpreter >> bytecodePrimAdd [
 	| rcvr arg result |
 	rcvr := self stackValue: 1.

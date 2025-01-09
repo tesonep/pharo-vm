@@ -145,9 +145,6 @@ VMSpurMemoryManagerTest >> createExternalFunctionFor: aBlock withArgumentTypes: 
 	^ tfExternalFunction
 ]
 
-<<<<<<< HEAD
-{ #category : 'utils' }
-=======
 { #category : #helpers }
 VMSpurMemoryManagerTest >> createExternalFunctionFor: aBlock withArgumentTypes: argumentTypes withReturnType: returnType withCif: aCif [
 
@@ -169,7 +166,6 @@ VMSpurMemoryManagerTest >> createExternalFunctionFor: aBlock withArgumentTypes: 
 ]
 
 { #category : #utils }
->>>>>>> 3254c3d62d (Added an error handling mechanism to the bytecodeFFICall, so that it can call the runner as before in cases where there is errors. And a couple of tests)
 VMSpurMemoryManagerTest >> createLargeIntegerClasses [
 
 	| classLargeInteger classLargeNegativeInteger |
@@ -542,9 +538,6 @@ VMSpurMemoryManagerTest >> newEphemeronObject [
 		classIndex: (memory ensureBehaviorHash: ourEphemeronClass)
 ]
 
-<<<<<<< HEAD
-{ #category : 'helpers - methods' }
-=======
 { #category : #helpers }
 VMSpurMemoryManagerTest >> newExternalAddress: anInteger [
 
@@ -559,7 +552,6 @@ VMSpurMemoryManagerTest >> newExternalAddress: anInteger [
 ]
 
 { #category : #'helpers - methods' }
->>>>>>> 7984242ba1 (first version of the jitted primitive for ffi)
 VMSpurMemoryManagerTest >> newMethodWithSmallContext: isSmall WithArguments: arguments [
 	
 	| method methodHeader |
