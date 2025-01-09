@@ -298,7 +298,7 @@ SimpleStackBasedCogit >> ceShortCutTraceStore: aProcessorSimulationTrap [
 				into: (processor registerAt: ReceiverResultReg)]
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentForExternalFunctionWithOutgoingJumpFallbackAndWithCif: aCif [
 	<var: #aCif type: #'ffi_cif *'>
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
@@ -322,7 +322,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentForExternalFunctionWithOutgoingJu
 
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentForExternalFunctionWithOutgoingJumpFallbackAndWithCif: aCif usingRegister: aRegister [
 	<var: #aCif type: #'ffi_cif *'>
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
@@ -346,7 +346,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentForExternalFunctionWithOutgoingJu
 
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentInIndex: indexOfArg forExternalFunctionWithOutgoingJumpFallbackAndWithCif: aCif usingRegister: aRegister [
 	<var: #aCif type: #'ffi_cif *'>
 	"indexOfArg is 0-based"
@@ -366,10 +366,12 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentInIndex: indexOfArg forExternalFu
 
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentInIndex: indexOfArg forExternalFunctionWithOutgoingJumpFallbackAndWithCif: aCif usingRegister: aRegister withIncomingFallbackJump: aFallbackJumpToMerge [
 
 	<var: #aCif type: 'ffi_cif*'>
+	<returnTypeC: #'AbstractInstruction *'>
+	
 	| numberOfBits signedOrNot |
 	numberOfBits := 0.
 	signedOrNot := -1.
@@ -420,8 +422,10 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentInIndex: indexOfArg forExternalFu
 		  withIncomingFallbackJump: aFallbackJumpToMerge
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentOfType: typeOfArgument forExternalFunctionUsing: aRegister [
+
+	<returnTypeC: #'AbstractInstruction *'>
 
 	[ typeOfArgument ]
 		caseOf:
@@ -463,7 +467,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentOfType: typeOfArgument forExterna
 
 ]
 
-{ #category : #'compile abstract instructions' }
+{ #category : 'compile abstract instructions' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentPointer: aRegister [ 
 	| mergePointToExit fallthroughJump fallbackJump fallthroughLabel jumpImmediate externalAddressIndex jumpBadClass |
 
@@ -494,7 +498,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentPointer: aRegister [
 	^ fallbackJump
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentPointer: aRegister withIncomingFallbackJump: aFallbackJumpToMerge [
 
 	| mergePointToExit fallthroughJump fallbackJump fallthroughLabel jumpImmediate externalAddressIndex jumpBadClass |
@@ -530,7 +534,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentPointer: aRegister withIncomingFa
 	^ fallbackJump
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentUsingWithCif: aCif withFallbackJump: fallbackJumpToMerge [  				"MOMENTANEAAAAAAAA"
 
 	| jumpBadArg jumpBelowRep fallthroughJump mergePointToExit fallbackJump fallthroughLabel exitWithoutModifyingRegister |
@@ -564,7 +568,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentUsingWithCif: aCif withFallbackJu
 	^ fallbackJump
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentsForExternalFunctionWithCif: aCif [
 	"The idea here is that we want to generate code to make different checks on the arguments of a external function. At this point those values are already in the corresponding registers.
 	 To know at which register is a specific argument given the CIF we have a helper method implemented in the backend: #getRegisterForExternalFunctionArgumentInIndex:fromCif:
@@ -598,7 +602,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentsForExternalFunctionWithCif: aCif
 
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentsForExternalFunctionWithOneArgWithCif: aCif [
 	<var: #aCif type: #'ffi_cif *'>
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
@@ -622,7 +626,7 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentsForExternalFunctionWithOneArgWit
 
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackArgumentsForExternalFunctionWithTwoArgsWithCif: aCif [
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
 	This would be the only check we do at run-time. So we generate (cogit) code to do it:"
@@ -739,12 +743,13 @@ SimpleStackBasedCogit >> checkAndUnpackArgumentsForExternalFunctionWithTwoArgsWi
 		otherwise: [ ^ nil ]"
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUnpackOneArgumentIn: aRegister ForExternalFunctionWithCif: aCif [
 	<var: #aCif type: #'ffi_cif *'>
 	"Verify if the argument(s) we receive for the C function comply with the ones describes in the cif.
 	This would be the only check we do at run-time. So we generate (cogit) code to do it:"
-	
+	<returnTypeC: #'AbstractInstruction *'>
+
 	self assert: aCif numberArguments = 1.
 	
 	"Here we have just one argument. Looking at the cif we should know in which register that argument is.
@@ -789,7 +794,7 @@ SimpleStackBasedCogit >> checkAndUnpackOneArgumentIn: aRegister ForExternalFunct
 
 ]
 
-{ #category : #'compile abstract instructions' }
+{ #category : 'compile abstract instructions' }
 SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSize: numberOfBits signed: signedOrNot [ 
 	"
 	signedOrNot = 1 -> the value is signed.
@@ -805,6 +810,8 @@ SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSize: nu
 			- value > MAX value possible for numberOfBits
 	"
 	| jumpBadArg jumpBelowRep jumpAboveRep mergePointToExit fallthroughJump fallbackJump fallthroughLabel notJumpAbove exitWithoutModifyingRegister |
+	
+	<returnTypeC: #'AbstractInstruction *'>
 	
 	jumpBadArg := objectRepresentation genJumpNotSmallInteger: aRegister.					"NO destructiva"
 	
@@ -914,7 +921,7 @@ SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSize: nu
 	^ fallbackJump
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSize: numberOfBits signed: signedOrNot withIncomingFallbackJump: fallbackJumpToMerge [
 	"
 	signedOrNot = 1 -> the value is signed.
@@ -929,7 +936,8 @@ SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSize: nu
 			- value < 0 
 			- value > MAX value possible for numberOfBits
 	"
-
+	<returnTypeC: #'AbstractInstruction *'>
+	
 	| jumpBadArg jumpBelowRep jumpAboveRep mergePointToExit fallthroughJump fallbackJump fallthroughLabel notJumpAbove exitWithoutModifyingRegister |
 	jumpBadArg := objectRepresentation genJumpNotSmallInteger: aRegister. "NO destructiva"
 
@@ -1027,7 +1035,7 @@ SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forIntegerOfSize: nu
 	^ fallbackJump
 ]
 
-{ #category : #'compile abstract instructions' }
+{ #category : 'compile abstract instructions' }
 SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forKindOfInteger: aKindOfIntegerAsString [
 	"
 	value:= value inside aRegister. We want to check that:
@@ -1039,6 +1047,8 @@ SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forKindOfInteger: aK
 			- value < 0 
 			- value > MAX value possible for aKindOfInteger
 	"
+	<returnTypeC: 'CogAbstractInstruction*'>
+	
 	| jumpBadArg jumpBelowRep jumpAboveRep mergePointToExit fallthroughJump fallbackJump fallthroughLabel numberOfBits signedOrNot |
 	
 	jumpBadArg := objectRepresentation genJumpNotSmallInteger: aRegister.
@@ -1114,7 +1124,6 @@ SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forKindOfInteger: aK
 			 ]
 		} otherwise: [ ^ nil ].
 	
-	
 	"Everything went ok! We need to continue with the next instructions and not fall back to the slow case"
 	fallthroughJump := self Jump: 0.
 	
@@ -1130,7 +1139,7 @@ SimpleStackBasedCogit >> checkAndUntagArgumentIn: aRegister forKindOfInteger: aK
 	^ fallbackJump
 ]
 
-{ #category : #'compile abstract instructions' }
+{ #category : 'compile abstract instructions' }
 SimpleStackBasedCogit >> checkAndUntagArgumentsIn: firstRegister forIntegerOfSize: numberOfBitsFirstReg signed: signedOrNotFirstReg AndIn: secondRegister ofIntegerSize: numberOfBitsSecondReg signed: signedOrNotSecondReg [
 	"
 	signedOrNot = 1 -> the value is signed.
@@ -1145,6 +1154,8 @@ SimpleStackBasedCogit >> checkAndUntagArgumentsIn: firstRegister forIntegerOfSiz
 			- value < 0 
 			- value > MAX value possible for numberOfBits
 	"
+	<returnTypeC: #'AbstractInstruction *'>
+		
 	| jumpBadFirstArg jumpBelowRepFirstReg jumpAboveRepFirstReg jumpBadSecondArg jumpBelowRepSecondReg jumpAboveRepSecondReg mergePointToExit fallthroughJump fallbackJump fallthroughLabel notJumpAboveOne notJumpAboveTwo |
 	
 	jumpBadFirstArg := objectRepresentation genJumpNotSmallInteger: firstRegister.
@@ -1334,7 +1345,7 @@ SimpleStackBasedCogit >> checkAndUntagArgumentsIn: firstRegister forIntegerOfSiz
 	^ fallbackJump
 ]
 
-{ #category : #'compile abstract instructions' }
+{ #category : 'compile abstract instructions' }
 SimpleStackBasedCogit >> compileFrameBuild [
 	"Build a frame for a CogMethod activation.  See CoInterpreter class>>initializeFrameIndices.
 	 		receiver (in ReceiverResultReg)
@@ -2148,7 +2159,7 @@ SimpleStackBasedCogit >> fallbackToPrimitiveWithFunction: aTFExternalFunction us
 		regsToSave: self emptyRegisterMask
 ]
 
-{ #category : #'bytecode generator support' }
+{ #category : 'bytecode generator support' }
 SimpleStackBasedCogit >> firstSpecialSelectorBytecodeOffset [
 	<inline: true>
 	
@@ -2194,7 +2205,7 @@ SimpleStackBasedCogit >> genBlockReturn [
 	^0
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> genBytecodeFFICall [
 
 	| n aTFExternalFunction runner externalFunctionAddr cif failure jumpContinue continueToNextBytecode jumpSomeError |
@@ -2251,7 +2262,7 @@ SimpleStackBasedCogit >> genBytecodeFFICall [
 	^ 0
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> genCallMappedInlinedPrimitive [
 	"Implemented with SistaCogit only"
 	^EncounteredUnknownBytecode
@@ -3980,14 +3991,14 @@ SimpleStackBasedCogit >> generateTracingTrampolines [
 		 ceTraceStoreTrampoline := self simulatedTrampolineFor: #ceShortCutTraceStore:]
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> getCifFromTFExternalFunction: aTFExternalFunction [
 
 	<doNotGenerate>
 	^ coInterpreter getCifFromTFExternalFunction: aTFExternalFunction
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> getRegisterForArgumentInIndex: indexOfArg fromCif: aCif [
 
 	"esto es para SysV!!!"
@@ -4154,13 +4165,13 @@ SimpleStackBasedCogit >> handleReturnFromExternalFunctionWithCif: aCif [
 			  scratchReg: Extra1Reg ]
 ]
 
-{ #category : #'register management' }
+{ #category : 'register management' }
 SimpleStackBasedCogit >> isCallerSavedReg: reg [
 	<inline: true>
 	^self register: reg isInMask: CallerSavedRegisterMask
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> isExternalFunctionPrototypeSupported: aCif [
 	"For now the supported function prototypes are those that comply with all the following:
 	- 0 to 3 arguments
@@ -4187,7 +4198,7 @@ SimpleStackBasedCogit >> isExternalFunctionPrototypeSupported: aCif [
 
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> isIntegerOrPointerType: aCifArgType [
 	"This method is supposed to be used for the external call through FFI.
 	Integer and pointer types are passes through the same registers.
@@ -4198,7 +4209,7 @@ SimpleStackBasedCogit >> isIntegerOrPointerType: aCifArgType [
 
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 SimpleStackBasedCogit >> isIntegerType: aCifArgType [
 	"This method is supposed to be used for the external call through FFI.
 	Integer types are passed through the same registers.
@@ -4215,7 +4226,7 @@ SimpleStackBasedCogit >> isIntegerType: aCifArgType [
 
 ]
 
-{ #category : #'method introspection' }
+{ #category : 'method introspection' }
 SimpleStackBasedCogit >> mapPCDataFor: cogMethod into: arrayObj [
 	"Collect the branch and send data for cogMethod, storing it into arrayObj."
 	<api>
@@ -4392,7 +4403,7 @@ SimpleStackBasedCogit >> picAbortTrampolineFor: numArgs [
 	^cePICAbortTrampoline
 ]
 
-{ #category : #'compile abstract instructions' }
+{ #category : 'compile abstract instructions' }
 SimpleStackBasedCogit >> prepareExternalCallWithCif: aCif [
 	"According to the cif, we'll extract the values from the stack and put them in registers.
 	These registers will be chosen according to the calling convention, this is: they will be chosen
@@ -4436,7 +4447,7 @@ SimpleStackBasedCogit >> prepareExternalCallWithCif: aCif [
 	
 ]
 
-{ #category : #'primitive generators' }
+{ #category : 'primitive generators' }
 SimpleStackBasedCogit >> primitiveDescriptor [
 	"If there is a generator for the current primitive then answer it;
 	 otherwise answer nil."
@@ -4500,7 +4511,7 @@ SimpleStackBasedCogit >> putSelfInReceiverResultReg [
 	self MoveMw: FoxMFReceiver r: FPReg R: ReceiverResultReg
 ]
 
-{ #category : #'external primitive support' }
+{ #category : 'external primitive support' }
 SimpleStackBasedCogit >> recordCallOffsetIn: cogMethod [
 	<api>
 	<var: #cogMethod type: #'CogMethod *'>
@@ -4622,7 +4633,7 @@ SimpleStackBasedCogit >> setInterpreter: aCoInterpreter [
 	externalSetPrimOffsets := CArrayAccessor on: (Array new: MaxNumArgs + 1)
 ]
 
-{ #category : #'bytecode generator support' }
+{ #category : 'bytecode generator support' }
 SimpleStackBasedCogit >> setSimulatedCif: aCif [
 
 	indexForSimulatedCif ifNil: [ indexForSimulatedCif := 0 ].
@@ -4636,7 +4647,7 @@ SimpleStackBasedCogit >> setSimulatedCif: aCif [
 	^ indexForSimulatedCif - 1
 ]
 
-{ #category : #'bytecode generator support' }
+{ #category : 'bytecode generator support' }
 SimpleStackBasedCogit >> setSimulatedCif: aCif at: anAddress [
 
 	"indexForSimulatedCif ifNil: [ indexForSimulatedCif := 0 ]."
@@ -4650,7 +4661,7 @@ SimpleStackBasedCogit >> setSimulatedCif: aCif at: anAddress [
 	"^ indexForSimulatedCif - 1"
 ]
 
-{ #category : #'bytecode generator support' }
+{ #category : 'bytecode generator support' }
 SimpleStackBasedCogit >> temporaryIndexOfFrameOffset: offset [
 	^self temporaryIndexOfFrameOffset: offset numArgs: methodOrBlockNumArgs
 ]

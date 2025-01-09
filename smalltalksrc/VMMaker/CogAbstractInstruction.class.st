@@ -1071,7 +1071,7 @@ CogAbstractInstruction >> getOperandsWithFormat: format [
 	^ strOperands 
 ]
 
-{ #category : #'calling C function in Smalltalk stack' }
+{ #category : 'calling C function in Smalltalk stack' }
 CogAbstractInstruction >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg fromCif: aCif [
 	
 	"This method is for the backends to return a specific register given the index in the arguments listed in aCif.
@@ -1081,7 +1081,7 @@ CogAbstractInstruction >> getRegisterForExternalFunctionArgumentInIndex: indexOf
 	self subclassResponsibility
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 CogAbstractInstruction >> hasConditionRegister [
 	"Answer if the receiver supports, e.g., JumpOverflow after a regular AddRR"
 	<inline: true>
@@ -1494,7 +1494,7 @@ CogAbstractInstruction >> outputMachineCodeAt: targetAddress [
 		objectMemory byteAt: targetAddress + j put: (machineCode at: j)]
 ]
 
-{ #category : #'calling C function in Smalltalk stack' }
+{ #category : 'calling C function in Smalltalk stack' }
 CogAbstractInstruction >> prepareForExternalCallWithCif: aCif [
 	
 	"This method is for the backends to pick the corresponding registers for the arguments for an external function call.
@@ -1505,7 +1505,7 @@ CogAbstractInstruction >> prepareForExternalCallWithCif: aCif [
 	self subclassResponsibility
 ]
 
-{ #category : #'calling C function in Smalltalk stack' }
+{ #category : 'calling C function in Smalltalk stack' }
 CogAbstractInstruction >> prepareStackToCallCFunctionInSmalltalkStack: anObject [
 	
 	"This is a hook to allow the backends to implement special handling when calling a C function in the Smalltalk stack"
@@ -1757,12 +1757,12 @@ CogAbstractInstruction >> storeLiteral32: literal32 beforeFollowingAddress: foll
 	self storeLiteral: literal32 beforeFollowingAddress: followingAddress
 ]
 
-{ #category : #translation }
+{ #category : 'translation' }
 CogAbstractInstruction >> supportsJITtedBytecodeFFICall [
 	^false
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 CogAbstractInstruction >> symbolic [
 	<doNotGenerate> "Smalltalk-side only"
 	^String streamContents: [:s| self symbolicOn: s]

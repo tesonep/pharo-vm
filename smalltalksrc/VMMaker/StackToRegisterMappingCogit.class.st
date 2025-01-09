@@ -939,7 +939,7 @@ StackToRegisterMappingCogit >> ceStoreCheckTrampoline [
 	^ self objectRepresentation ceStoreCheckTrampoline
 ]
 
-{ #category : #'compile abstract instructions' }
+{ #category : 'compile abstract instructions' }
 StackToRegisterMappingCogit >> compileAbstractInstructionsFrom: start through: end [
 	"Loop over bytecodes, dispatching to the generator for each bytecode, handling fixups in due course."
 	| nextOpcodeIndex descriptor nExts fixup result |
@@ -1510,7 +1510,7 @@ StackToRegisterMappingCogit >> genBlockReturn [
 	^0
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 StackToRegisterMappingCogit >> genBytecodeFFICall [
 
 	| n aTFExternalFunction runner externalFunctionAddr cif failure jumpContinue continueToNextBytecode jumpMaybeFailCheckUnpack jumpMaybeFailAlloc notSpilledSlots |
@@ -1520,15 +1520,18 @@ StackToRegisterMappingCogit >> genBytecodeFFICall [
 	runner := self getLiteral: (n >> 4 bitAnd: 2r1111).
 
 	externalFunctionAddr := coInterpreter getHandler: aTFExternalFunction.
-	externalFunctionAddr ifNil: [ ^ self fallbackInvalidFFICall ].
+	externalFunctionAddr ifNil: [ self fallbackInvalidFFICall. ^ 0 ].
 	cif := self getCifFromTFExternalFunction: aTFExternalFunction.
-	cif ifNil: [ ^ self fallbackInvalidFFICall ].
+	cif ifNil: [ 
+		self fallbackInvalidFFICall.
+		^ 0 ].
 
 	(backEnd supportsJITtedBytecodeFFICall not or: [
 		 (self isExternalFunctionPrototypeSupported: cif) not ]) ifTrue: [ "Unoptimized signature. Fallback to a message send instead"
-		^ self
+		self
 			  fallbackToPrimitiveWithFunction: aTFExternalFunction
-			  usingRunner: runner ].
+			  usingRunner: runner.
+		^ 0 ].
 
 	"Move the arguments for the external function from the stack where we received them to the corresponding registers depending on the ABI,
 	that is why we rely on the backEnd to choose the registers."
@@ -3481,7 +3484,7 @@ StackToRegisterMappingCogit >> generateTracingTrampolines [
 		 ceTraceStoreTrampoline := self simulatedTrampolineFor: #ceShortCutTraceStore:]
 ]
 
-{ #category : #'simulation stack' }
+{ #category : 'simulation stack' }
 StackToRegisterMappingCogit >> initSimStackForFramefulMethod: startpc [
 	<var: #desc type: #'CogSimStackEntry *'>
 	simStackPtr := methodOrBlockNumTemps. "N.B. Includes num args"
@@ -3608,7 +3611,7 @@ StackToRegisterMappingCogit >> initializeFixupAt: targetPC [
 	self initializeFixup: fixup
 ]
 
-{ #category : #'span functions' }
+{ #category : 'span functions' }
 StackToRegisterMappingCogit >> isPushNil: descriptor pc: pc nExts: nExts method: aMethodObj [
 	<inline: true>
 	<var: #descriptor type: #'BytecodeDescriptor *'>
@@ -4002,7 +4005,7 @@ StackToRegisterMappingCogit >> populate: tuple withPICInfoFor: cPIC firstCacheTa
 		objectMemory storePointer: i * 2 ofObject: tuple withValue: value ]
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 StackToRegisterMappingCogit >> prepareExternalCallWithCif: aCif [
 	"According to the cif, we'll extract the values from the stack and put them in registers.
 	These registers will be chosen according to the calling convention, this is: they will be chosen
@@ -4313,13 +4316,13 @@ StackToRegisterMappingCogit >> pushNilSize: aMethodObj numInitialNils: numInitia
 	^self perform: pushNilSizeFunction with: aMethodObj with: numInitialNils
 ]
 
-{ #category : #'bytecode generators' }
+{ #category : 'bytecode generators' }
 StackToRegisterMappingCogit >> pushRegister: aRegister [ 				"tara bien????????"
 
 	self ssPush: aRegister
 ]
 
-{ #category : #'simulation only' }
+{ #category : 'simulation only' }
 StackToRegisterMappingCogit >> put: aString paddedTo: compositionWidth tabWidth: tabWidth on: aStream [
 	<doNotGenerate>
 	| fittedString size width |

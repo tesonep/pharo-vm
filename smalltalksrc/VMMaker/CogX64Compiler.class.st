@@ -4242,11 +4242,12 @@ CogX64Compiler >> generateLowLevelUnlock: vmOwnerLockAddress [
 	cogit RetN: 0
 ]
 
-{ #category : #abi }
+{ #category : 'abi' }
 CogX64Compiler >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg forSysVFromCif: aCif [
 
 	<var: #aCif type: #'ffi_cif *'>
 	<var: #numArgs type: #'int'>
+	<returnTypeC: #'AbstractInstruction *'>
 	
 	| numArgs |
 	numArgs := aCif numberArguments.
@@ -4331,11 +4332,13 @@ CogX64Compiler >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg forS
 		otherwise: [ ^ nil ]
 ]
 
-{ #category : #abi }
+{ #category : 'abi' }
 CogX64Compiler >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg forWin64FromCif: aCif [
 
 	<var: #aCif type: #'ffi_cif *'>
 	<var: #numArgs type: #'int'>
+	<returnTypeC: #'AbstractInstruction *'>
+
 	| numArgs |
 	numArgs := aCif numberArguments.
 	self assert: (indexOfArg >= 0 and: indexOfArg < numArgs).
@@ -4419,7 +4422,7 @@ CogX64Compiler >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg forW
 		otherwise: [ ^ nil ]
 ]
 
-{ #category : #abi }
+{ #category : 'abi' }
 CogX64Compiler >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg fromCif: aCif [
 
 	SysV
@@ -4433,7 +4436,7 @@ CogX64Compiler >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg from
 				  forWin64FromCif: aCif ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 CogX64Compiler >> hasConditionRegister [
 	"Answer if the receiver supports, e.g., JumpOverflow after a regular AddRR"
 	^true
@@ -4711,7 +4714,7 @@ CogX64Compiler >> padIfPossibleWithStopsFrom: startAddr to: endAddr [
 	self stopsFrom: startAddr to: endAddr
 ]
 
-{ #category : #abi }
+{ #category : 'abi' }
 CogX64Compiler >> prepareForExternalCallWithCif: aCif [
 	"Argument registers for args 0 to 3 in SysV are RDI RSI RDX RCX, and in Win64 are RCX RDX R8 R9"
 
@@ -4763,7 +4766,7 @@ CogX64Compiler >> prepareForExternalCallWithCif: aCif [
 				ifFalse: [ "floats not supported yet." ] ]
 ]
 
-{ #category : #'calling C function in Smalltalk stack' }
+{ #category : 'calling C function in Smalltalk stack' }
 CogX64Compiler >> prepareStackToCallCFunctionInSmalltalkStack: anInteger [ 
 
 	"In SysV and Win64 Extra5Reg (R15) is callee preserved"
@@ -4806,7 +4809,7 @@ CogX64Compiler >> relocateMethodReferenceBeforeAddress: pc by: delta [
 				and: [((objectMemory byteAt: pc - 7) bitOr: (self mod: 0 RM: 0 RO: 7)) = (self mod: ModRegInd RM: 5 RO: 7)]])
 ]
 
-{ #category : #abi }
+{ #category : 'abi' }
 CogX64Compiler >> restoreStackArgumentsFromRegistersWithCif: aCif [
 	"The inverse operation of prepareForExternalCallWithCif: . In the case of an error we will fall back to the primitive, to do so we need to leave the stack as we found it."
 
@@ -4833,7 +4836,7 @@ CogX64Compiler >> restoreStackArgumentsFromRegistersWithCif: aCif [
 		ifFalse: [ "TODO" ] 
 ]
 
-{ #category : #'calling C function in Smalltalk stack' }
+{ #category : 'calling C function in Smalltalk stack' }
 CogX64Compiler >> returnFromCallCFunctionInSmalltalkStack: anInteger [ 
 
 	cogit MoveR: Extra5Reg R: SPReg.
@@ -5088,12 +5091,12 @@ CogX64Compiler >> storeLiteral32: literal beforeFollowingAddress: followingAddre
 		byteAt: followingAddress - 4 put: (literal            bitAnd: 16rFF)
 ]
 
-{ #category : #translation }
+{ #category : 'translation' }
 CogX64Compiler >> supportsJITtedBytecodeFFICall [
 	^true
 ]
 
-{ #category : #disassembly }
+{ #category : 'disassembly' }
 CogX64Compiler >> twoByteInstructionSizeAt: pc [
 	| op |
 	op := objectMemory byteAt: pc + 1. 

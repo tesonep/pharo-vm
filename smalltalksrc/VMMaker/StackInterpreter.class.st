@@ -2762,7 +2762,7 @@ StackInterpreter >> booleanValueOf: obj [
 	^ nil
 ]
 
-{ #category : #'stack bytecodes' }
+{ #category : 'stack bytecodes' }
 StackInterpreter >> bytecodeFFICall [
 
 	<var: #parameters type: #'void **'>
@@ -2791,7 +2791,7 @@ StackInterpreter >> bytecodeFFICall [
 			  andCif: cif ]
 ]
 
-{ #category : #'common selector sends' }
+{ #category : 'common selector sends' }
 StackInterpreter >> bytecodePrimAdd [
 	| rcvr arg result |
 	rcvr := self stackValue: 1.
@@ -5108,7 +5108,7 @@ StackInterpreter >> divorceFramesIn: aStackPage [
 	aStackPage baseFP: 0
 ]
 
-{ #category : #'stack bytecodes' }
+{ #category : 'stack bytecodes' }
 StackInterpreter >> doCall: externalFunction withCif: cif [
 	"This method is meant to be called from bytecodeFFICall. The reason why all this logic is extracted in a different method is for the allocations (all the 'alloca's):
 	
@@ -5174,7 +5174,7 @@ What we decided to do instead was to extract all the allocations to a different 
 	^ true
 ]
 
-{ #category : #simulation }
+{ #category : 'simulation' }
 StackInterpreter >> doItContext [
 	"This is for the bottom-right-hand pane in the simulator window."
 	<doNotGenerate>
@@ -5904,7 +5904,7 @@ StackInterpreter >> fetchFloat: fieldIndex ofObject: objectPointer [
 	^objectMemory floatValueOf: floatOop
 ]
 
-{ #category : #utilities }
+{ #category : 'utilities' }
 StackInterpreter >> fetchFloatFromOop: elemOop [
 	"Fetch the instance variable at the given index of the given object. Return the C double precision floating point value of that instance variable, or fail if it is not a Float."
 	"Note: May be called by translated primitive code."
@@ -5913,7 +5913,7 @@ StackInterpreter >> fetchFloatFromOop: elemOop [
 	^objectMemory floatValueOf: elemOop
 ]
 
-{ #category : #utilities }
+{ #category : 'utilities' }
 StackInterpreter >> fetchInteger: fieldIndex ofObject: objectPointer [
 	"Note: May be called by translated primitive code."
 
@@ -5979,14 +5979,14 @@ StackInterpreter >> fetchStackPointerOf: aContext [
 	^objectMemory integerValueOf: sp
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreter >> ffi_call: aCif _: externalFunctionAddress _: returnHolder _: parameters [
 
 	<doNotGenerate>
 	libFFI ffiCall: aCif _: externalFunctionAddress _: returnHolder _: parameters
 ]
 
-{ #category : #'debug support' }
+{ #category : 'debug support' }
 StackInterpreter >> findClassContainingMethod: meth startingAt: classObj [
 	| currClass classDict classDictSize methodArray i |
 	(objectMemory isOopForwarded: classObj)
@@ -7183,7 +7183,7 @@ StackInterpreter >> getGCMode [
 	^0
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreter >> getHandler: anOop [ 
 
 	<api>
@@ -7196,7 +7196,7 @@ StackInterpreter >> getHandler: anOop [
 
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreter >> getHandlerAsCif: anOop [
 
 	<api>
@@ -7205,7 +7205,7 @@ StackInterpreter >> getHandlerAsCif: anOop [
 		  inSmalltalk: [ libFFI cifAtAddress: (self getHandler: anOop) ]
 ]
 
-{ #category : #'image save/restore' }
+{ #category : 'image save/restore' }
 StackInterpreter >> getImageHeaderFlags [
 	"Answer the flags that are contained in the 7th long of the image header."
 	^(VMBIGENDIAN ifTrue: [0] ifFalse: [2]) "this is the imageFloatsLittleEndian flag"
@@ -7259,12 +7259,12 @@ StackInterpreter >> getThisSessionID [
 	^globalSessionID
 ]
 
-{ #category : #'stack bytecodes' }
+{ #category : 'stack bytecodes' }
 StackInterpreter >> handleFFIError [
 	
 ]
 
-{ #category : #'stack bytecodes' }
+{ #category : 'stack bytecodes' }
 StackInterpreter >> handleFFIErrorWithFunctionDefinition: aFunctionDefinition runner: aRunner andCif: cif [  
 	| numberOfArguments arguments lookupClassTag |
 	
@@ -7297,7 +7297,7 @@ StackInterpreter >> handleFFIErrorWithFunctionDefinition: aFunctionDefinition ru
 
 ]
 
-{ #category : #'message sending' }
+{ #category : 'message sending' }
 StackInterpreter >> handleForwardedSelectorFaultFor: selectorOop [
 	"Handle a send fault that is due to a send using a forwarded selector.
 	 Unforward the selector and follow the current method and special
@@ -10075,7 +10075,7 @@ StackInterpreter >> marryFrame: theFP SP: theSP copyTemps: copyTemps [
 	^ theContext
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreter >> marshallAndPushReturnValueFrom: returnHolder ofType: ffiType poping: argumentsAndReceiverCount [
 
 	<option: #FEATURE_FFI>
@@ -10112,7 +10112,7 @@ StackInterpreter >> marshallAndPushReturnValueFrom: returnHolder ofType: ffiType
 
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreter >> marshallArgumentFrom: argumentsArrayOop atIndex: i into: argHolder ofType: argType withSize: argTypeSize [
 
 	<option: #FEATURE_FFI>
@@ -10151,7 +10151,7 @@ StackInterpreter >> marshallArgumentFrom: argumentsArrayOop atIndex: i into: arg
 		otherwise: [ self primitiveFailFor: PrimErrBadArgument ]
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreter >> marshallArgumentFromElement: elemOop into: argHolder ofType: argType withSize: argTypeSize [
 
 	<option: #FEATURE_FFI>

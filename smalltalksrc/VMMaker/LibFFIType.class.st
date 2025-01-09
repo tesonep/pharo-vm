@@ -59,7 +59,7 @@ LibFFIType class >> type: aType size: aSize on: aLibFFI [
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 LibFFIType >> elements: aCollection [ 
 	elements := aCollection
 ]

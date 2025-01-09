@@ -1280,7 +1280,7 @@ CogObjectRepresentation >> genPrimitiveQuo [
 	^CompletePrimitive
 ]
 
-{ #category : #'primitive generators' }
+{ #category : 'primitive generators' }
 CogObjectRepresentation >> genPrimitiveSameThreadCalloutUint64Uint64 [
 	| jumpOutOfBottomBounds primitiveFailure jumpInvalidCifNargs jumpInvalidCifRtype jumpBadArg jumpInvalidCifArgtype |
 	"PARAM_EXTERNALFUNCTION := 1.
@@ -1362,7 +1362,7 @@ CogObjectRepresentation >> genPrimitiveSameThreadCalloutUint64Uint64 [
 
 ]
 
-{ #category : #'primitive generators' }
+{ #category : 'primitive generators' }
 CogObjectRepresentation >> genPrimitiveShallowCopy [
 	"subclasses override if they can"
 	^UnimplementedPrimitive

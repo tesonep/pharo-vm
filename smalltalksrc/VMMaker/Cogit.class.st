@@ -11633,7 +11633,7 @@ Cogit >> simulatedReadWriteVariableAddress: getter in: receiver [
 	^address
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 Cogit >> simulatedReadWriteVariableAddress: getter in: receiver atAddress: address [
 	"Answer a simulated variable.  This is a variable whose value can be read
 	 and written by generated machine code."
@@ -11652,7 +11652,7 @@ Cogit >> simulatedReadWriteVariableAddress: getter in: receiver atAddress: addre
 
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 Cogit >> simulatedTrampolineFor: selectorOrAddress [
 	"Set a simulated trampoline.  This is a method in the cogit, coInterpreter
 	 or objectMemory that is called from a machine code trampoline."
@@ -11700,7 +11700,7 @@ Cogit >> simulatedVariableAddress: getter in: receiver [
 	^address
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 Cogit >> simulatedVariableAddress: getter in: receiver atAddress: address [
 	"Answer a simulated variable.  This is a variable whose value can be read
 	 by generated machine code."
@@ -11711,7 +11711,7 @@ Cogit >> simulatedVariableAddress: getter in: receiver atAddress: address [
 	^address
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 Cogit >> simulatedVariableAt: address [
 	"Answer a simulated variable's value for handling the push/pop tracer."
 	<doNotGenerate>

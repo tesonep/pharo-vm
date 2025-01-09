@@ -4274,13 +4274,13 @@ CogARMv8Compiler >> generalPurposeRegisterMap [
 			#r12. R12	}
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 CogARMv8Compiler >> getRegisterForExternalFunctionArgumentInIndex: indexOfArg fromCif: aCif [
 
 	"TODO"
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 CogARMv8Compiler >> hasConditionRegister [
 	"Answer if the receiver supports, e.g., JumpOverflow after a regular AddRR"
 	^true
@@ -5473,7 +5473,7 @@ CogARMv8Compiler >> prefetchMemory: prefetchOperationFlags sourceRegister: sourc
 		bitOr: (prefetchOperationFlags bitAnd: 16r1f)))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 CogARMv8Compiler >> prepareForExternalCallWithCif: aCif [
 	"INSPIRACION: CogARMv8Compiler >> genMarshallNArgs: numArgs arg: regOrConst0 arg: regOrConst1 arg: regOrConst2 arg: regOrConst3"
 
@@ -5499,7 +5499,7 @@ CogARMv8Compiler >> prepareForExternalCallWithCif: aCif [
 	cogit moveEntry: 3 intoRegister: CArg3Reg
 ]
 
-{ #category : #'calling C function in Smalltalk stack' }
+{ #category : 'calling C function in Smalltalk stack' }
 CogARMv8Compiler >> prepareStackToCallCFunctionInSmalltalkStack: anObject [ 
 
 	"In ARMv8 we are using an alternative SPReg that is not the machine SP.
@@ -6357,12 +6357,12 @@ CogARMv8Compiler >> subsSize: is64Bits sourceRegister: sourceRegister shift: shi
 		bitOr: (destinationRegister bitAnd: 2r11111)))))))
 ]
 
-{ #category : #translation }
+{ #category : 'translation' }
 CogARMv8Compiler >> supportsJITtedBytecodeFFICall [
 	^false
 ]
 
-{ #category : #'private-bit-manipulation' }
+{ #category : 'private-bit-manipulation' }
 CogARMv8Compiler >> trailingOnesOf: aNumber [
 	"Return how many trailing ones are in the 64bit bitString representation of aNumber.
 	That is, how many ones are in the least significant bits before there is a zero.

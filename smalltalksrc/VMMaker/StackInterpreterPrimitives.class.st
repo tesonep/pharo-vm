@@ -9,7 +9,7 @@ Class {
 	#tag : 'Interpreter'
 }
 
-{ #category : #'ffi' }
+{ #category : 'ffi' }
 StackInterpreterPrimitives >> callFunctionAtAddress: externalFunction with: anArgument [
 
 	^ self 
@@ -19,7 +19,7 @@ StackInterpreterPrimitives >> callFunctionAtAddress: externalFunction with: anAr
 	
 ]
 
-{ #category : #'primitive support' }
+{ #category : 'primitive support' }
 StackInterpreterPrimitives >> cloneContext: aContext [ 
 	| sz cloned spouseFP sp |
 	<var: #spouseFP type: #'char *'>
@@ -143,7 +143,7 @@ StackInterpreterPrimitives >> doPrimitiveSameThreadCallout [
 	self marshallAndPushReturnValueFrom: returnHolder ofType: cif returnType poping: 3.	
 ]
 
-{ #category : #ffi }
+{ #category : 'ffi' }
 StackInterpreterPrimitives >> doPrimitiveSameThreadCalloutUint64Uint64 [
 	"Actual primitive implementation of primitiveSameThreadCallout.
 	Because of Slang restrictions, making FFI optional requires cutting the primitive in two different methods. Otherwise slang will unconditionally do all local declarations which may refer to invalid types if FFI is not enabled.
@@ -526,7 +526,7 @@ StackInterpreterPrimitives >> marshallPointerFrom: argumentArrayOop at: index in
 	
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreterPrimitives >> marshallSInt16From: argumentArrayOop at: index into: holder [
 
 	| intHolder value |
@@ -568,7 +568,7 @@ StackInterpreterPrimitives >> marshallSInt64From: argumentArrayOop at: index int
 		
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreterPrimitives >> marshallSInt8From: argumentArrayOop at: index into: holder [
 
 	| intHolder value |
@@ -582,7 +582,7 @@ StackInterpreterPrimitives >> marshallSInt8From: argumentArrayOop at: index into
 		
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreterPrimitives >> marshallStructFrom: argumentsArrayOop at: index into: holder withSize: typeSize [ 
 
 
@@ -609,7 +609,7 @@ StackInterpreterPrimitives >> marshallStructFrom: argumentsArrayOop at: index in
 				with: (objectMemory cCoerce: srcPtr to: 'char *') startingAt: 0]
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreterPrimitives >> marshallUInt16From: argumentArrayOop at: index into: holder [
 
 	| intHolder value |
@@ -623,7 +623,7 @@ StackInterpreterPrimitives >> marshallUInt16From: argumentArrayOop at: index int
 		
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreterPrimitives >> marshallUInt32From: argumentArrayOop at: index into: holder [
 
 	| intHolder value |
@@ -637,7 +637,7 @@ StackInterpreterPrimitives >> marshallUInt32From: argumentArrayOop at: index int
 		
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreterPrimitives >> marshallUInt64From: argumentArrayOop at: index into: holder [
 
 	| intHolder value |
@@ -669,7 +669,7 @@ StackInterpreterPrimitives >> marshallUInt8From: argumentArrayOop at: index into
 		
 ]
 
-{ #category : #'ffi - helpers' }
+{ #category : 'ffi - helpers' }
 StackInterpreterPrimitives >> maybeExternalAddressOf: rcvr startingAt: byteOffset size: byteSize [
 
 "Return an int of the address of the byteSize slot (byte, short, int, whatever) at byteOffset in rcvr.
@@ -2668,7 +2668,7 @@ StackInterpreterPrimitives >> primitiveSameThreadCallout [
 		self primitiveFailFor: PrimErrUnsupported ]
 ]
 
-{ #category : #ffi }
+{ #category : 'ffi' }
 StackInterpreterPrimitives >> primitiveSameThreadCalloutUint64Uint64 [
 	"Because of Slang restrictions, making FFI optional requires cutting the primitive in two different methods. Otherwise slang will unconditionally do all local declarations which may refer to invalid types if FFI is not enabled.
 	
@@ -2681,7 +2681,7 @@ StackInterpreterPrimitives >> primitiveSameThreadCalloutUint64Uint64 [
 		ifFalse: [ self primitiveFailFor: PrimErrUnsupported ]
 ]
 
-{ #category : #'memory space primitives' }
+{ #category : 'memory space primitives' }
 StackInterpreterPrimitives >> primitiveSetGCSemaphore [
 	"Primitive. Indicate the semaphore to be signalled for upon garbage collection"
 	| index |
