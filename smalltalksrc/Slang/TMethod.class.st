@@ -462,6 +462,12 @@ TMethod >> bindVariablesIn: constantDictionary unless: cautionaryBlock [
 	self parseTree: (parseTree bindVariablesIn: constantDictionary unless: cautionaryBlock).
 ]
 
+{ #category : 'utilities' }
+TMethod >> browseMethod [
+	
+	^ (definingClass lookupSelector: selector) browse
+]
+
 { #category : 'transformations' }
 TMethod >> buildCaseStmt: aSendNode in: aCodeGen [
 
