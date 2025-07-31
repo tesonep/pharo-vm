@@ -73,3 +73,5 @@ if(NOT WIN)
     target_link_libraries(UnixOSProcessPlugin PRIVATE FilePlugin)
     target_link_libraries(UnixOSProcessPlugin PRIVATE SocketPlugin)
 endif()
+
+add_vm_plugin(BlocPlugin TRUE FALSE)
