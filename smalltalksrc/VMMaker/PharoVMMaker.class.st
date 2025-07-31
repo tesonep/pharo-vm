@@ -10,7 +10,8 @@ Class {
 		'generatePlugins',
 		'wordSizesToGenerate',
 		'imageFormatName',
-		'options'
+		'options',
+		'externalPlugins'
 	],
 	#category : 'VMMaker-Generation',
 	#package : 'VMMaker',
@@ -100,6 +101,25 @@ PharoVMMaker class >> withCoInterpreter [
 	^ self on: CoInterpreter
 ]
 
+{ #category : 'adding' }
+PharoVMMaker >> addExternalPlugin: aClassOrString [
+
+	| className |
+	
+	className := aClassOrString isString
+		             ifTrue: [ aClassOrString ]
+		             ifFalse: [ aClassOrString name ].
+		
+	self externalPlugins add: className
+]
+
+{ #category : 'generation' }
+PharoVMMaker >> externalPlugins [
+
+	^ externalPlugins ifNil: [
+		  externalPlugins := #( FilePlugin SurfacePlugin FloatArrayPlugin ) asOrderedCollection ]
+]
+
 { #category : 'generation' }
 PharoVMMaker >> generate: interpreterClass memoryManager: memoryManager [
 
@@ -144,7 +164,7 @@ PharoVMMaker >> generate: interpreterClass memoryManager: memoryManager compiler
 
 		vmmaker
 				stopOnErrors: stopOnErrors;
-				internal: #() external: #(FilePlugin SurfacePlugin FloatArrayPlugin);
+				internal: #() external: self externalPlugins;
 				generateInterpreterFile;
 				generateCogitFiles.
 		generatePlugins ifTrue: [ vmmaker generateExternalPlugins ]] valueSupplyingAnswer:true.]
