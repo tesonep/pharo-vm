@@ -60,8 +60,9 @@ BaselineOfVMMaker >> baseline: spec [
 								
 			"VM plugins"
 			spec package: 'FileAttributesPlugin' with: [ spec requires: #( 'VMMaker' ) ].
+			spec package: 'VM-BlockPlugin' with: [ spec requires: #( 'VMMaker' ) ].
 			
-			spec group: 'plugins' with: #('FileAttributesPlugin').
+			spec group: 'plugins' with: #('FileAttributesPlugin' 'VM-BlockPlugin').
 			spec group: 'core' with: #('VMMaker').
 			spec group: 'tools' with: #('VMMaker-Tools').			
 			spec group: 'tests' with: #('VMMakerTests' 'CAST-Tests').
