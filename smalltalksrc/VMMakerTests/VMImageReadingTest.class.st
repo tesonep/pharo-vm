@@ -166,10 +166,10 @@ VMImageReadingTest >> testSavingImageWithThreeSegmentsIsCorrectlySqueezed [
 
 	| firstNewSegmentSize secondNewSegmentSize obj newObj originalObjHash |
 	firstNewSegmentSize := memory
-		                       growOldSpaceByAtLeast: 12 * 1024
+		                       publicGrowOldSpaceByAtLeast: 12 * 1024
 		                       callingOperation: 'testSavingImageWithThreeSegmentsIsCorrectlySqueezed'.
 	secondNewSegmentSize := memory
-		                        growOldSpaceByAtLeast: 12 * 1024
+		                        publicGrowOldSpaceByAtLeast: 12 * 1024
 		                        callingOperation: 'testSavingImageWithThreeSegmentsIsCorrectlySqueezed'.
 
 	self assert: memory segmentManager numSegments equals: 3.

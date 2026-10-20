@@ -212,7 +212,7 @@ SpurSelectiveCompactor >> findOrAllocateSegmentToFill [
 	segmentToFill ifNotNil: [ ^ 0 ].
 	"No empty segment. We need to allocate a new one"
 	(manager
-		 growOldSpaceByAtLeast: manager growHeadroom
+		 internalGrowOldSpaceByAtLeast: manager growHeadroom
 		 callingOperation: 'finding or allocating segment to fill') ifNil: [ "failed to allocate"
 		^ 0 ].
 	"We don't know which segment it is that we've just allocated... So we look for it... This is a bit dumb."

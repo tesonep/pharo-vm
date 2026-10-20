@@ -43,6 +43,7 @@ Instance Variables
 	marking					<Boolean>
 	markStack					<Integer objStack oop>
 	maxOldSpaceSize			<Integer>
+	maxOldSpaceSizeIsStrict <Integer>
 	memory					<Bitmap|LittleEndianBitmap>
 	needGCFlag				<Boolean>
 	newSpaceLimit				<Integer address>
@@ -180,6 +181,9 @@ markStack
 
 maxOldSpaceSize
 	- the maximum allowed size of old space in bytes.  If zero, there is no limit.
+
+maxOldSpaceSizeIsStrict
+   - it is true if the maxOldSpaceSize is strict. When it is strict internal operations of the VM are also limited by maxOldSpaceSize
 
 memory
 	- in the Simulator this is the single oldSpace segment that contains the codeZone, newSpace and oldSpace.  In C it is effectively the base address of used memory.
@@ -588,6 +592,7 @@ Class {
 		'lowSpaceThreshold',
 		'totalFreeOldSpace',
 		'maxOldSpaceSize',
+		'maxOldSpaceSizeIsStrict',
 		'gcPhaseInProgress',
 		'gcStartUsecs',
 		'gcMarkEndUsecs',
@@ -730,7 +735,9 @@ SpurMemoryManager class >> declareCVarsIn: aCCodeGenerator [
 		var: #heapGrowthToSizeGCRatio type: #float;
 		var: #heapSizeAtPreviousGC type: #usqInt;
 		var: #totalFreeOldSpace type: #usqInt;
-		var: #maxOldSpaceSize type: #usqInt.
+		var: #maxOldSpaceSize type: #usqInt;
+		var: #maxOldSpaceSizeIsStrict type: #usqInt.
+		
 	aCCodeGenerator
 		var: #oldSpaceUsePriorToScavenge type: #sqLong.
 	aCCodeGenerator
@@ -979,7 +986,7 @@ SpurMemoryManager class >> memoryManagerVersion [
 SpurMemoryManager class >> mustBeGlobal: var [
 	"Answer if a variable must be global and exported.  Used for inst vars that are accessed from VM support code."
 
-	^#('checkForLeaks' 'maxOldSpaceSize') includes: var
+	^#('checkForLeaks' 'maxOldSpaceSize' 'maxOldSpaceSizeIsStrict') includes: var
 ]
 
 { #category : 'accessing' }
@@ -4856,7 +4863,7 @@ SpurMemoryManager >> ensureRoomOnObjStackAt: objStackRootIndex [
 					                 classIndex: self wordSizeClassIndexPun.
 				freeOrNewPage ifNil: [ "Allocate a new segment an retry. This is very uncommon. But it happened to me (Clement)."
 					self
-						growOldSpaceByAtLeast: ObjStackPageSlots
+						internalGrowOldSpaceByAtLeast: ObjStackPageSlots
 						callingOperation: 'ensuring room on ObjStack'.
 					freeOrNewPage := self
 						                 allocateSlotsInOldSpace: ObjStackPageSlots
@@ -6162,6 +6169,14 @@ SpurMemoryManager >> getMaxOldSpaceSize [
 ]
 
 { #category : 'accessing' }
+SpurMemoryManager >> getMaxOldSpaceSizeIsStrict [
+	<api>
+
+	^ maxOldSpaceSizeIsStrict
+
+]
+
+{ #category : 'accessing' }
 SpurMemoryManager >> getMemoryMap [
 
 	<api>
@@ -6246,7 +6261,7 @@ SpurMemoryManager >> growHeadroom: aValue [
 ]
 
 { #category : 'growing/shrinking memory' }
-SpurMemoryManager >> growOldSpaceByAtLeast: minAmmount callingOperation: aString [
+SpurMemoryManager >> growOldSpaceByAtLeast: minAmmount callingOperation: aString beingStrict: beStrict [
 	"Attempt to grow memory by at least minAmmount bytes.
 	 Answer the size of the new segment in bytes, or nil if the attempt failed."
 	| ammount headroom total start interval |
@@ -6263,7 +6278,7 @@ SpurMemoryManager >> growOldSpaceByAtLeast: minAmmount callingOperation: aString
 	ammount := ammount max: growHeadroom.
 
 	"Now apply the maxOldSpaceSize limit, if one is in effect."
-	maxOldSpaceSize > 0 ifTrue:
+	(maxOldSpaceSize > 0 and: [maxOldSpaceSizeIsStrict or: [beStrict]]) ifTrue:
 		[total := segmentManager totalBytesInSegments.
 		 total >= maxOldSpaceSize ifTrue:[
 			self logError: 'Could not allocate more memory while %s. MaxOldSpaceSize reached.' _: aString.
@@ -6309,7 +6324,7 @@ SpurMemoryManager >> growToAccomodateContainerWithNumSlots: numSlots [
 	| delta |
 	delta := self baseHeaderSize * 2 + (numSlots * self bytesPerOop).
 	^ self
-		  growOldSpaceByAtLeast: (growHeadroom max: delta)
+		  internalGrowOldSpaceByAtLeast: (growHeadroom max: delta)
 		  callingOperation: 'growing to accomodate allObjects / allInstances container'
 ]
 
@@ -6816,6 +6831,8 @@ SpurMemoryManager >> initialize [
 							ifNotNil: [:initOpts| initOpts at: #maxOldSpaceSize ifAbsent: [0]]
 							ifNil: [0].
 	
+	maxOldSpaceSizeIsStrict := false.
+	
 	avoidSearchingSegmentsWithPinnedObjects := false.
 	
 	maxSlotsForNewSpaceAlloc := 0. "We will use the default value"
@@ -7261,6 +7278,13 @@ SpurMemoryManager >> integerObjectOfCharacterObject: oop [
 { #category : 'immediates' }
 SpurMemoryManager >> integerValueOf: oop [
 	^self subclassResponsibility
+]
+
+{ #category : 'growing/shrinking memory' }
+SpurMemoryManager >> internalGrowOldSpaceByAtLeast: minAmmount callingOperation: aString [
+
+	<returnTypeC: #size_t>
+	^ self growOldSpaceByAtLeast: minAmmount callingOperation: aString beingStrict: false
 ]
 
 { #category : 'simulation' }
@@ -8716,7 +8740,7 @@ SpurMemoryManager >> lowSpaceThreshold: threshold [
 	 is inlined into setSignalLowSpaceFlagAndSaveProcess"
 	(threshold > 0 and: [ totalFreeOldSpace < threshold ]) ifTrue: [
 		self
-			growOldSpaceByAtLeast: threshold - totalFreeOldSpace
+			internalGrowOldSpaceByAtLeast: threshold - totalFreeOldSpace
 			callingOperation: 'ensuring enough space after setting lowSpaceThreshold' ].
 	self assert: totalFreeOldSpace >= lowSpaceThreshold
 ]
@@ -11282,6 +11306,13 @@ SpurMemoryManager >> printUnmarkedOops [
 	self printOopsExcept: #isMarked
 ]
 
+{ #category : 'growing/shrinking memory' }
+SpurMemoryManager >> publicGrowOldSpaceByAtLeast: minAmmount callingOperation: aString [
+
+	<returnTypeC: #size_t>
+	^ self growOldSpaceByAtLeast: minAmmount callingOperation: aString beingStrict: true
+]
+
 { #category : 'class table' }
 SpurMemoryManager >> purgeDuplicateClassTableEntriesFor: aClass [
 	"Given that either marking or allInstances has ensured that
@@ -12123,6 +12154,14 @@ SpurMemoryManager >> setMaxOldSpaceSize: limit [
 	^0
 ]
 
+{ #category : 'accessing' }
+SpurMemoryManager >> setMaxOldSpaceSizeIsStrict: aBoolean [
+	<api>
+	<var: #aBoolean type: #usqInt>
+	maxOldSpaceSizeIsStrict := aBoolean.
+	^0
+]
+
 { #category : 'instantiation' }
 SpurMemoryManager >> setMaxSlotsForNewSpaceAlloc: aValue [
 	
@@ -12934,7 +12973,7 @@ SpurMemoryManager >> sufficientSpaceAfterGC: numBytes [
 		self fullGC ].
 	[
 	totalFreeOldSpace < growHeadroom and: [
-		(self growOldSpaceByAtLeast: 0 callingOperation: 'ensuring sufficient space after GC')
+		(self publicGrowOldSpaceByAtLeast: 0 callingOperation: 'ensuring sufficient space after GC')
 			notNil ] ] whileTrue: [
 		totalFreeOldSpace >= growHeadroom ifTrue: [ ^ true ] ].
 	lowSpaceThreshold > totalFreeOldSpace ifTrue: [ "space is low"

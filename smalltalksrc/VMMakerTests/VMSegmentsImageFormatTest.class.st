@@ -11,7 +11,7 @@ VMSegmentsImageFormatTest >> testImageWithTwoSegmentsHasCorrectSizeForFirstSegme
 
 	| header newSegmentSize |
 	newSegmentSize := memory
-		                  growOldSpaceByAtLeast: 10000
+		                  publicGrowOldSpaceByAtLeast: 10000
 		                  callingOperation: 'testImageWithTwoSegmentsHasCorrectSizeForFirstSegment'.
 
 	self assert: memory segmentManager numSegments equals: 2.
@@ -33,7 +33,7 @@ VMSegmentsImageFormatTest >> testImageWithTwoSegmentsHasCorrectSizeForFullImage 
 
 	| header newSegmentSize |
 	newSegmentSize := memory
-		                  growOldSpaceByAtLeast: 10000
+		                  publicGrowOldSpaceByAtLeast: 10000
 		                  callingOperation: 'testImageWithTwoSegmentsHasCorrectSizeForFullImage'.
 
 	self assert: memory segmentManager numSegments equals: 2.
@@ -59,7 +59,7 @@ VMSegmentsImageFormatTest >> testImageWithTwoSegmentsRespectGrowHeadroomWhenIsBi
 
 	| newSegmentSize |
 	newSegmentSize := memory
-		                  growOldSpaceByAtLeast: 10000
+		                  publicGrowOldSpaceByAtLeast: 10000
 		                  callingOperation: 'testImageWithTwoSegmentsRespectGrowHeadroomWhenIsBigger'.
 
 	self assert: memory segmentManager numSegments equals: 2.
@@ -77,7 +77,7 @@ VMSegmentsImageFormatTest >> testImageWithTwoSegmentsRespectGrowHeadroomWhenIsSm
 	memory growHeadroom: 4096.
 
 	newSegmentSize := memory
-		                  growOldSpaceByAtLeast: 10000
+		                  publicGrowOldSpaceByAtLeast: 10000
 		                  callingOperation: 'testImageWithTwoSegmentsRespectGrowHeadroomWhenIsSmaller'.
 
 	self assert: memory segmentManager numSegments equals: 2.

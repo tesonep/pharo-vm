@@ -1698,7 +1698,9 @@ StackInterpreterPrimitives >> primitiveGetVMParameter: index [
 								objectMemory getFromPermToNewSpaceRememberedSet rememberedSetSize].
 			[85] ->  [^objectMemory integerObjectOf: 
 								objectMemory getFromPermToNewSpaceRememberedSet rememberedSetLimit].
-			[86] ->  [^ objectMemory getAvoidSearchingSegmentsWithPinnedObjects ifTrue: [ objectMemory trueObject ] ifFalse: [objectMemory falseObject]]}
+			[86] ->  [^ objectMemory getAvoidSearchingSegmentsWithPinnedObjects ifTrue: [ objectMemory trueObject ] ifFalse: [objectMemory falseObject]].
+			[87] ->  [^ objectMemory getMaxOldSpaceSizeIsStrict ifTrue: [ objectMemory trueObject ] ifFalse: [objectMemory falseObject]]		
+		}
 		otherwise: [^nil]
 ]
 
@@ -2723,7 +2725,13 @@ StackInterpreterPrimitives >> primitiveSetVMParameter: index arg: argOop [
 			(objectMemory isBooleanObject: argOop) ifFalse:
 				[^self primitiveFailFor: PrimErrBadArgument].
 			 arg := objectMemory booleanValueOf: argOop 
-			 ]}
+			 ].		
+			[87] -> [ 
+			(objectMemory isBooleanObject: argOop) ifFalse:
+				[^self primitiveFailFor: PrimErrBadArgument].
+			 arg := objectMemory booleanValueOf: argOop 
+			 ]
+		}
 		otherwise: [ 
 			(objectMemory isIntegerObject: argOop) ifFalse:
 				[^self primitiveFailFor: PrimErrBadArgument].
@@ -2814,7 +2822,16 @@ StackInterpreterPrimitives >> primitiveSetVMParameter: index arg: argOop [
 				ifFalse: [objectMemory falseObject].
 				
 			objectMemory setAvoidSearchingSegmentsWithPinnedObjects: arg.
-			self initPrimCall ]}
+			self initPrimCall ].
+		[87] -> [ 
+			result := objectMemory getMaxOldSpaceSizeIsStrict 
+				ifTrue: [objectMemory trueObject] 
+				ifFalse: [objectMemory falseObject].
+				
+			objectMemory setMaxOldSpaceSizeIsStrict: arg.
+			self initPrimCall ]
+		
+		}
 		otherwise: [].
 
 	self successful
@@ -4006,7 +4023,7 @@ StackInterpreterPrimitives >> primitiveVMParameter [
 	Otherwise the *real* list is in the code: `StackInterpreterPrimitives>>#primitiveGetVMParameter:`"
 
 	| paramsArraySize index |
-	paramsArraySize := 86.
+	paramsArraySize := 87.
 	argumentCount = 0 ifTrue: [^self primitiveAllVMParameters: paramsArraySize].
 	argumentCount > 2 ifTrue: [^self primitiveFailFor: PrimErrBadNumArgs].
 	

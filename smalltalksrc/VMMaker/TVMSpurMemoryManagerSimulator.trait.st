@@ -39,7 +39,7 @@ TVMSpurMemoryManagerSimulator >> firstIndexableField: objOop [
 ]
 
 { #category : 'growing/shrinking memory' }
-TVMSpurMemoryManagerSimulator >> growOldSpaceByAtLeast: minAmmount callingOperation: aString [
+TVMSpurMemoryManagerSimulator >> growOldSpaceByAtLeast: minAmmount callingOperation: aString beingStrict: beStrict [
 	"Attempt to grow memory by at least minAmmount.
 	 Answer the size of the new segment, or nil if the attempt failed.
 	 Override to not grow during the Spur image bootstrap."
@@ -47,7 +47,8 @@ TVMSpurMemoryManagerSimulator >> growOldSpaceByAtLeast: minAmmount callingOperat
 	^ self bootstrapping ifFalse: [
 		  super
 			  growOldSpaceByAtLeast: minAmmount
-			  callingOperation: aString ]
+			  callingOperation: aString
+			  beingStrict: beStrict ]
 ]
 
 { #category : 'initialization' }

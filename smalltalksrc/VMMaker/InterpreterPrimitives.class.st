@@ -2024,7 +2024,7 @@ InterpreterPrimitives >> primitiveGrowMemoryByAtLeast [
 	(objectMemory isIntegerObject: ammount) ifFalse: [
 		^ self primitiveFailFor: PrimErrBadArgument ].
 	(objectMemory
-		 growOldSpaceByAtLeast: (objectMemory integerValueOf: ammount)
+		 publicGrowOldSpaceByAtLeast: (objectMemory integerValueOf: ammount)
 		 callingOperation: 'primitiveGrowMemoryByAtLeast - requested by the image')
 		ifNil: [ self primitiveFailFor: PrimErrNoMemory ]
 		ifNotNil: [ :segSize | self pop: 2 thenPushInteger: segSize ]

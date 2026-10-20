@@ -357,7 +357,7 @@ SpurGenerationScavenger >> copyToOldSpace: survivor bytes: bytesInObject format:
 	newStart := manager allocateOldSpaceChunkOfBytes: bytesInObject.
 	newStart ifNil: [
 		growResult := manager
-			              growOldSpaceByAtLeast: 0
+			              internalGrowOldSpaceByAtLeast: 0
 			              callingOperation: 'copying objects to OldSpace during GC'. "grow by growHeadroom"
 		newStart := manager allocateOldSpaceChunkOfBytes: bytesInObject.
 		newStart ifNil: [

@@ -145,7 +145,7 @@ VMRememberedSet >> growRememberedSet [
 		newObj := manager allocatePinnedSlots: numSlots + 1024.
 		newObj ifNil: [
 			(manager
-				 growOldSpaceByAtLeast: numSlots + 1024 * manager wordSize
+				 internalGrowOldSpaceByAtLeast: numSlots + 1024 * manager wordSize
 				 callingOperation: 'growing remembered set') ifNil: [
 				self error: 'could not grow remembered set' ].
 			newObj := manager allocatePinnedSlots: numSlots + 1024 "cannot fail" ] ].
@@ -539,7 +539,7 @@ VMRememberedSet >> shrinkRememberedSet [
 		newObj := manager allocatePinnedSlots: numSlots.
 		newObj ifNil: [
 			(manager
-				 growOldSpaceByAtLeast: numSlots * manager wordSize
+				 internalGrowOldSpaceByAtLeast: numSlots * manager wordSize
 				 callingOperation: 'shrinking RememberedSet') ifNil: [
 				self error: 'could not shrink remembered set' ].
 			newObj := manager allocatePinnedSlots: numSlots "cannot fail" ] ].

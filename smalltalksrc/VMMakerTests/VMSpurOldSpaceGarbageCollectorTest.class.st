@@ -638,7 +638,7 @@ VMSpurOldSpaceGarbageCollectorTest >> testGrowOldSpace [
 	freespace := memory totalFreeOldSpace.
 	slotsNumber := freespace / memory wordSize.
 	memory
-		growOldSpaceByAtLeast: slotsNumber
+		publicGrowOldSpaceByAtLeast: slotsNumber
 		callingOperation: 'testGrowOldSpace'.
 		
 	freespace2 := memory totalFreeOldSpace.
